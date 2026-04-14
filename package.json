@@ -1,0 +1,34 @@
+{
+  "name": "com.bizsim.google.play.editor.core",
+  "version": "1.0.0",
+  "displayName": "BizSim Google Play - Editor Core",
+  "description": "Shared editor utilities for all BizSim Google Play packages. Provides package detection, scripting define management, and the unified Package Dashboard window.",
+  "unity": "6000.0",
+  "keywords": [
+    "bizsim",
+    "google-play",
+    "editor",
+    "utilities",
+    "firebase"
+  ],
+  "changelogUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core/blob/main/CHANGELOG.md",
+  "documentationUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core/blob/main/README.md",
+  "author": {
+    "name": "BizSim Game Studios",
+    "url": "https://github.com/BizSim-Game-Studios"
+  },
+  "contributors": [
+    {
+      "name": "Aşkın Ceyhan",
+      "url": "https://github.com/AskinCeyhan"
+    }
+  ],
+  "company": "BizSim Game Studios",
+  "homepage": "https://www.bizsim.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core.git"
+  },
+  "type": "library"
+}
