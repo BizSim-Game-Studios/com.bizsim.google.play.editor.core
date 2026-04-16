@@ -397,6 +397,15 @@ namespace BizSim.Google.Play.Editor.Core
                 }
             }
 
+            if (pkg.IsInstalled && registryEntry != null && registryEntry.HasUpdate)
+            {
+                if (GUILayout.Button($"Update to {registryEntry.LatestTag}", GUILayout.Height(20)))
+                {
+                    _installQueue.Enqueue(new InstallRequest(registryEntry.PackageId, registryEntry.GitInstallUrl));
+                    if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
+                }
+            }
+
             EditorGUILayout.EndVertical();
         }
 
