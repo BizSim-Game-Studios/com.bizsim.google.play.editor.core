@@ -170,6 +170,9 @@ namespace BizSim.Google.Play.Editor.Core
             // Enrich with manifest versions where assembly version is missing
             EnrichWithManifestVersions(results, assemblyToPackageId);
 
+            // Enrich registry entries with version metadata from PackageVersion classes
+            EnrichWithVersionMetadata(registry);
+
             return results;
         }
 
@@ -199,6 +202,45 @@ namespace BizSim.Google.Play.Editor.Core
                     pkg.Version = manifestVersion;
                     results[i] = pkg;
                 }
+            }
+        }
+
+        private static void EnrichWithVersionMetadata(PackageRegistryData registry)
+        {
+            var allEntries = new List<PackageRegistryEntry>();
+            allEntries.AddRange(registry.BizSimPackages);
+            // Only BizSim packages have VersionClassName
+
+            foreach (var entry in allEntries)
+            {
+                if (string.IsNullOrEmpty(entry.VersionClassName)) continue;
+
+                var type = System.AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => !a.IsDynamic)
+                    .SelectMany(a =>
+                    {
+                        try { return a.GetTypes(); }
+                        catch { return System.Type.EmptyTypes; }
+                    })
+                    .FirstOrDefault(t => t.FullName == entry.VersionClassName);
+
+                if (type == null) continue;
+
+                entry.CurrentVersion = (string)type.GetField("Current",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
+                    | System.Reflection.BindingFlags.Static)?.GetValue(null);
+                entry.ReleaseDate = (string)type.GetField("ReleaseDate",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
+                    | System.Reflection.BindingFlags.Static)?.GetValue(null);
+                entry.PlayCoreVersion = (string)type.GetField("PlayCoreVersion",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
+                    | System.Reflection.BindingFlags.Static)?.GetValue(null);
+
+                // Games uses PgsV2SdkVersion instead of PlayCoreVersion
+                if (string.IsNullOrEmpty(entry.PlayCoreVersion))
+                    entry.PlayCoreVersion = (string)type.GetField("PgsV2SdkVersion",
+                        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
+                        | System.Reflection.BindingFlags.Static)?.GetValue(null);
             }
         }
 
