@@ -56,6 +56,9 @@ namespace BizSim.Google.Play.Editor.Core
         private void OnFocus()
         {
             RefreshPackages();
+
+            if (_registry != null)
+                RemoteVersionChecker.CheckAll(_registry, () => Repaint());
         }
 
         private void RefreshPackages()
@@ -66,6 +69,24 @@ namespace BizSim.Google.Play.Editor.Core
             _bizSimPackages = _packages.Where(p => p.Category == PackageCategory.BizSim).ToList();
             _googlePlayPackages = _packages.Where(p => p.Category == PackageCategory.GooglePlay).ToList();
             _utilityPackages = _packages.Where(p => p.Category == PackageCategory.BizSimUtility).ToList();
+
+            // Sync scan results back into registry entries so HasUpdate works
+            SyncRegistryInstalledState();
+        }
+
+        private void SyncRegistryInstalledState()
+        {
+            if (_registry == null || _packages == null)
+                return;
+
+            foreach (var pkg in _packages)
+            {
+                var entry = FindRegistryEntry(pkg.AssemblyName);
+                if (entry == null) continue;
+
+                entry.IsInstalled = pkg.IsInstalled;
+                entry.InstalledVersion = pkg.Version;
+            }
         }
 
         private void OnGUI()
@@ -96,6 +117,9 @@ namespace BizSim.Google.Play.Editor.Core
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             GUILayout.Label("BizSim Package Dashboard", EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
+
+            if (RemoteVersionChecker.IsChecking)
+                GUILayout.Label("Checking for updates...", EditorStyles.miniLabel);
 
             if (GUILayout.Button("↻ Refresh", EditorStyles.toolbarButton, GUILayout.Width(70)))
             {

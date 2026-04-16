@@ -23,6 +23,13 @@ namespace BizSim.Google.Play.Editor.Core
             @"""tag_name""\s*:\s*""([^""]+)""",
             RegexOptions.Compiled);
 
+        static int _pendingCheckCount;
+
+        /// <summary>
+        /// True while one or more version check requests are in flight.
+        /// </summary>
+        public static bool IsChecking => _pendingCheckCount > 0;
+
         /// <summary>
         /// Check latest tags for all BizSim packages that have a GitHubRepoName.
         /// Populates each entry's LatestTag field and invokes onComplete when done.
@@ -66,6 +73,8 @@ namespace BizSim.Google.Play.Editor.Core
                 return;
             }
 
+            _pendingCheckCount++;
+
             // Poll via EditorApplication.update
             EditorApplication.CallbackFunction poll = null;
             poll = () =>
@@ -97,6 +106,7 @@ namespace BizSim.Google.Play.Editor.Core
 
                 if (allDone)
                 {
+                    _pendingCheckCount--;
                     EditorApplication.update -= poll;
                     onComplete?.Invoke();
                 }
