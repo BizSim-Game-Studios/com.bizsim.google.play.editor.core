@@ -141,19 +141,65 @@ namespace BizSim.Google.Play.Editor.Core
             if (registry == null)
                 return results;
 
+            // Build assembly-name → package-id lookup for manifest enrichment
+            var assemblyToPackageId = new Dictionary<string, string>();
             foreach (var entry in registry.FirebasePackages)
+            {
                 AddDetection(results, entry.DisplayName, entry.AssemblyName, PackageCategory.Firebase);
+                assemblyToPackageId[entry.AssemblyName] = entry.PackageId;
+            }
 
             foreach (var entry in registry.BizSimPackages)
+            {
                 AddDetection(results, entry.DisplayName, entry.AssemblyName, entry.Category);
+                assemblyToPackageId[entry.AssemblyName] = entry.PackageId;
+            }
 
             foreach (var entry in registry.GooglePlayPackages)
+            {
                 AddDetection(results, entry.DisplayName, entry.AssemblyName, PackageCategory.GooglePlay);
+                assemblyToPackageId[entry.AssemblyName] = entry.PackageId;
+            }
 
             if (registry.Edm4u != null)
+            {
                 AddDetection(results, registry.Edm4u.DisplayName, registry.Edm4u.AssemblyName, PackageCategory.GooglePlay);
+                assemblyToPackageId[registry.Edm4u.AssemblyName] = registry.Edm4u.PackageId;
+            }
+
+            // Enrich with manifest versions where assembly version is missing
+            EnrichWithManifestVersions(results, assemblyToPackageId);
 
             return results;
+        }
+
+        private static void EnrichWithManifestVersions(
+            List<PackageInfo> results,
+            Dictionary<string, string> assemblyToPackageId)
+        {
+            var manifestVersions = ManifestReader.ReadInstalledVersions();
+            if (manifestVersions.Count == 0)
+                return;
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                var pkg = results[i];
+                if (!pkg.IsInstalled)
+                    continue;
+
+                // Only enrich when the assembly scan returned no real version
+                if (!string.IsNullOrEmpty(pkg.Version) && pkg.Version != "Installed")
+                    continue;
+
+                if (!assemblyToPackageId.TryGetValue(pkg.AssemblyName, out string packageId))
+                    continue;
+
+                if (manifestVersions.TryGetValue(packageId, out string manifestVersion))
+                {
+                    pkg.Version = manifestVersion;
+                    results[i] = pkg;
+                }
+            }
         }
 
         private static void AddDetection(List<PackageInfo> list, string displayName, string assemblyName, PackageCategory category)
