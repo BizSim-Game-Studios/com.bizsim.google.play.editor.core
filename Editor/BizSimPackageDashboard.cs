@@ -24,6 +24,8 @@ namespace BizSim.Google.Play.Editor.Core
         private List<PackageInfo> _bizSimPackages;
         private List<PackageInfo> _googlePlayPackages;
         private List<PackageInfo> _utilityPackages;
+        private PackageRegistryData _registry;
+        private PackageInstallQueue _installQueue;
         private bool _firebaseDetailsFoldout = true;
         private bool _bizSimFoldout = true;
         private bool _googlePlayFoldout = true;
@@ -40,6 +42,14 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void OnEnable()
         {
+            _installQueue = new PackageInstallQueue();
+            _installQueue.OnItemCompleted += (_, _) =>
+            {
+                RefreshPackages();
+                Repaint();
+            };
+            _installQueue.OnAllCompleted += () => Repaint();
+
             RefreshPackages();
         }
 
@@ -50,7 +60,8 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void RefreshPackages()
         {
-            _packages = PackageDetector.ScanAll();
+            _registry = PackageRegistryData.Load();
+            _packages = PackageDetector.ScanAll(_registry);
             _firebasePackages = _packages.Where(p => p.Category == PackageCategory.Firebase).ToList();
             _bizSimPackages = _packages.Where(p => p.Category == PackageCategory.BizSim).ToList();
             _googlePlayPackages = _packages.Where(p => p.Category == PackageCategory.GooglePlay).ToList();
@@ -374,7 +385,48 @@ namespace BizSim.Google.Play.Editor.Core
 
             EditorGUILayout.EndHorizontal();
 
+            // Install / Update buttons
+            var registryEntry = FindRegistryEntry(pkg.AssemblyName);
+
+            if (!pkg.IsInstalled && registryEntry != null && !string.IsNullOrEmpty(registryEntry.GitRepoUrl))
+            {
+                if (GUILayout.Button("Install", GUILayout.Height(20)))
+                {
+                    _installQueue.Enqueue(new InstallRequest(registryEntry.PackageId, registryEntry.GitInstallUrl));
+                    if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
+                }
+            }
+
             EditorGUILayout.EndVertical();
+        }
+
+        private PackageRegistryEntry FindRegistryEntry(string assemblyName)
+        {
+            if (_registry == null || string.IsNullOrEmpty(assemblyName))
+                return null;
+
+            foreach (var entry in _registry.BizSimPackages)
+            {
+                if (entry.AssemblyName == assemblyName)
+                    return entry;
+            }
+
+            foreach (var entry in _registry.FirebasePackages)
+            {
+                if (entry.AssemblyName == assemblyName)
+                    return entry;
+            }
+
+            foreach (var entry in _registry.GooglePlayPackages)
+            {
+                if (entry.AssemblyName == assemblyName)
+                    return entry;
+            }
+
+            if (_registry.Edm4u != null && _registry.Edm4u.AssemblyName == assemblyName)
+                return _registry.Edm4u;
+
+            return null;
         }
 
         private static void DrawStatusDot(bool active)
