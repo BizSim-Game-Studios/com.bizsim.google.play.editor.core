@@ -7,7 +7,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.agesignals.git",
       "GitHubRepoName": "com.bizsim.google.play.agesignals",
       "ConfigWindowTypeName": "BizSim.Google.Play.AgeSignals.Editor.AgeSignalsConfiguration",
-      "Category": 1
+      "Category": 1,
+      "VersionClassName": "BizSim.Google.Play.AgeSignals.PackageVersion",
+      "SampleFolders": ["BasicIntegration", "MockPresets"],
+      "DocFiles": ["DATA_SAFETY.md", "PRIVACY_MANIFEST.xml"],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": "BIZSIM_AGESIGNALS_INSTALLED"
     },
     {
       "PackageId": "com.bizsim.google.play.appupdate",
@@ -16,7 +21,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.appupdate.git",
       "GitHubRepoName": "com.bizsim.google.play.appupdate",
       "ConfigWindowTypeName": "BizSim.Google.Play.AppUpdate.Editor.AppUpdateConfiguration",
-      "Category": 1
+      "Category": 1,
+      "VersionClassName": "BizSim.Google.Play.AppUpdate.PackageVersion",
+      "SampleFolders": ["BasicIntegration", "FirebaseAdapter", "MockPresets", "PolicyPresets"],
+      "DocFiles": ["DATA_SAFETY.md", "TELEMETRY-DASHBOARD.md", "UNITY_ACTIVITY_OVERRIDE.md", "UPGRADE-1.x.md"],
+      "PlayCoreArtifact": "com.google.android.play:app-update:2.1.0",
+      "EditorInitDefine": "BIZSIM_APPUPDATE_INSTALLED"
     },
     {
       "PackageId": "com.bizsim.google.play.assetdelivery",
@@ -25,7 +35,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.assetdelivery.git",
       "GitHubRepoName": "com.bizsim.google.play.assetdelivery",
       "ConfigWindowTypeName": "BizSim.Google.Play.AssetDelivery.Editor.AssetDeliveryConfiguration",
-      "Category": 1
+      "Category": 1,
+      "VersionClassName": "BizSim.Google.Play.AssetDelivery.PackageVersion",
+      "SampleFolders": ["Addressables", "BasicIntegration", "MockPresets"],
+      "DocFiles": ["ADDRESSABLES_INTEGRATION.md", "BUILD_GRADLE_GUIDE.md", "DATA_SAFETY.md", "LOCAL_DEV_WORKFLOW.md"],
+      "PlayCoreArtifact": "com.google.android.play:asset-delivery:2.3.0",
+      "EditorInitDefine": "BIZSIM_ASSETDELIVERY_INSTALLED"
     },
     {
       "PackageId": "com.bizsim.google.play.games",
@@ -34,7 +49,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.games.git",
       "GitHubRepoName": "com.bizsim.google.play.games",
       "ConfigWindowTypeName": "BizSim.Google.Play.Games.Editor.GamesConfiguration",
-      "Category": 1
+      "Category": 1,
+      "VersionClassName": "BizSim.Google.Play.Games.PackageVersion",
+      "SampleFolders": ["BasicIntegration", "MockPresets"],
+      "DocFiles": ["API-REFERENCE.md", "ARCHITECTURE.md", "GETTING-STARTED.md", "TROUBLESHOOTING.md"],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": "BIZSIM_GAMES_INSTALLED"
     },
     {
       "PackageId": "com.bizsim.google.play.installreferrer",
@@ -43,7 +63,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.installreferrer.git",
       "GitHubRepoName": "com.bizsim.google.play.installreferrer",
       "ConfigWindowTypeName": "BizSim.Google.Play.InstallReferrer.Editor.InstallReferrerConfiguration",
-      "Category": 1
+      "Category": 1,
+      "VersionClassName": "BizSim.Google.Play.InstallReferrer.PackageVersion",
+      "SampleFolders": ["BasicIntegration", "MockPresets"],
+      "DocFiles": ["DATA_SAFETY.md", "PRIVACY_MANIFEST.xml", "UPGRADE_GUIDE.md"],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": "BIZSIM_INSTALLREFERRER_INSTALLED"
     },
     {
       "PackageId": "com.bizsim.google.play.review",
@@ -52,7 +77,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.review.git",
       "GitHubRepoName": "com.bizsim.google.play.review",
       "ConfigWindowTypeName": "BizSim.Google.Play.Review.Editor.ReviewConfiguration",
-      "Category": 1
+      "Category": 1,
+      "VersionClassName": "BizSim.Google.Play.Review.PackageVersion",
+      "SampleFolders": ["BasicIntegration", "FeedbackSink", "FirebaseAdapter", "MockPresets", "TriggerPresets"],
+      "DocFiles": ["DATA_SAFETY.md", "TELEMETRY-DASHBOARD.md", "UPGRADE-1.x.md"],
+      "PlayCoreArtifact": "com.google.android.play:review:2.0.2",
+      "EditorInitDefine": "BIZSIM_REVIEW_INSTALLED"
     },
     {
       "PackageId": "com.bizsim.unity.figma.importer",
@@ -61,7 +91,12 @@
       "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.unity.figma.importer.git",
       "GitHubRepoName": "com.bizsim.unity.figma.importer",
       "ConfigWindowTypeName": "",
-      "Category": 3
+      "Category": 3,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     }
   ],
   "FirebasePackages": [
@@ -72,7 +107,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.auth",
@@ -81,7 +121,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.crashlytics",
@@ -90,7 +135,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.remote-config",
@@ -99,7 +149,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.messaging",
@@ -108,7 +163,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.storage",
@@ -117,7 +177,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.firestore",
@@ -126,7 +191,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.functions",
@@ -135,7 +205,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.database",
@@ -144,7 +219,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.app-check",
@@ -153,7 +233,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.installations",
@@ -162,7 +247,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.firebase.firebaseai",
@@ -171,7 +261,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 0
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     }
   ],
   "GooglePlayPackages": [
@@ -182,7 +277,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 2
+      "Category": 2,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.play.core",
@@ -191,7 +291,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 2
+      "Category": 2,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.play.appupdate",
@@ -200,7 +305,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 2
+      "Category": 2,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     },
     {
       "PackageId": "com.google.play.assetdelivery",
@@ -209,7 +319,12 @@
       "GitRepoUrl": "",
       "GitHubRepoName": "",
       "ConfigWindowTypeName": "",
-      "Category": 2
+      "Category": 2,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     }
   ],
   "Edm4u": {
@@ -219,6 +334,11 @@
     "GitRepoUrl": "",
     "GitHubRepoName": "",
     "ConfigWindowTypeName": "",
-    "Category": 2
+    "Category": 2,
+    "VersionClassName": "",
+    "SampleFolders": [],
+    "DocFiles": [],
+    "PlayCoreArtifact": "",
+    "EditorInitDefine": ""
   }
 }
