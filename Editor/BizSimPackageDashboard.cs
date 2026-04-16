@@ -380,7 +380,7 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void DrawPackageGrid(List<PackageInfo> packages)
         {
-            int columns = Mathf.Max(1, Mathf.FloorToInt((position.width - 30) / 180f));
+            int columns = Mathf.Max(1, Mathf.FloorToInt((position.width - 30) / 200f));
             int col = 0;
 
             EditorGUILayout.BeginHorizontal();
@@ -402,51 +402,87 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void DrawPackageCard(PackageInfo pkg)
         {
-            EditorGUILayout.BeginVertical("box", GUILayout.MinWidth(160));
+            var entry = FindRegistryEntry(pkg.AssemblyName);
 
-            // Title
-            EditorGUILayout.LabelField(pkg.DisplayName, EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical("box", GUILayout.MinWidth(200));
 
-            // Status
+            // Row 1: Name + Version
             EditorGUILayout.BeginHorizontal();
-            DrawStatusDot(pkg.IsInstalled);
+            DrawStatusDot(pkg.IsInstalled, entry != null && entry.HasUpdate);
+            EditorGUILayout.LabelField(pkg.DisplayName, EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
 
-            if (pkg.IsInstalled)
-            {
-                string versionText = pkg.Version != null && pkg.Version != "Installed"
-                    ? $"v{pkg.Version}"
-                    : "Installed";
-                EditorGUILayout.LabelField(versionText, EditorStyles.miniLabel);
-            }
-            else
-            {
-                EditorGUILayout.LabelField("Not Found", EditorStyles.miniLabel);
-            }
-
+            string versionText = entry?.CurrentVersion
+                ?? pkg.Version
+                ?? (pkg.IsInstalled ? "Installed" : "---");
+            EditorGUILayout.LabelField(versionText, EditorStyles.miniLabel, GUILayout.Width(50));
             EditorGUILayout.EndHorizontal();
 
-            // Install / Update buttons
-            var registryEntry = FindRegistryEntry(pkg.AssemblyName);
+            // Row 2: Release date + Play Core version (if available)
+            if (entry != null && pkg.IsInstalled)
+            {
+                bool hasDate = !string.IsNullOrEmpty(entry.ReleaseDate);
+                bool hasPlayCore = !string.IsNullOrEmpty(entry.PlayCoreVersion);
+                if (hasDate || hasPlayCore)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.Space(16);
+                    if (hasDate)
+                        EditorGUILayout.LabelField(entry.ReleaseDate, EditorStyles.miniLabel, GUILayout.Width(80));
+                    if (hasPlayCore)
+                        EditorGUILayout.LabelField($"Play Core: {entry.PlayCoreVersion}", EditorStyles.miniLabel);
+                    GUILayout.FlexibleSpace();
+                    EditorGUILayout.EndHorizontal();
+                }
+            }
 
-            if (!pkg.IsInstalled && registryEntry != null && !string.IsNullOrEmpty(registryEntry.GitRepoUrl))
+            // Row 3: Action buttons
+            EditorGUILayout.BeginHorizontal();
+
+            if (!pkg.IsInstalled && entry != null && !string.IsNullOrEmpty(entry.GitRepoUrl))
             {
                 if (GUILayout.Button("Install", GUILayout.Height(20)))
                 {
-                    _installQueue.Enqueue(new InstallRequest(registryEntry.PackageId, registryEntry.GitInstallUrl));
+                    _installQueue.Enqueue(new InstallRequest(entry.PackageId, entry.GitInstallUrl));
                     if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
+                }
+            }
+            else if (pkg.IsInstalled)
+            {
+                if (entry != null && entry.HasUpdate)
+                {
+                    if (GUILayout.Button($"Update {entry.LatestTag}", GUILayout.Height(20), GUILayout.Width(90)))
+                    {
+                        _installQueue.Enqueue(new InstallRequest(entry.PackageId, entry.GitInstallUrl));
+                        if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
+                    }
+                }
+
+                if (entry != null && !string.IsNullOrEmpty(entry.ConfigWindowTypeName))
+                {
+                    if (GUILayout.Button("Configure", GUILayout.Height(20), GUILayout.Width(70)))
+                        OpenConfigWindow(entry);
+                }
+
+                if (entry != null)
+                {
+                    if (GUILayout.Button("...", GUILayout.Height(20), GUILayout.Width(22)))
+                        ShowPackageContextMenu(entry, pkg);
                 }
             }
 
-            if (pkg.IsInstalled && registryEntry != null && registryEntry.HasUpdate)
-            {
-                if (GUILayout.Button($"Update to {registryEntry.LatestTag}", GUILayout.Height(20)))
-                {
-                    _installQueue.Enqueue(new InstallRequest(registryEntry.PackageId, registryEntry.GitInstallUrl));
-                    if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
-                }
-            }
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();
+
+            // Right-click context menu on the whole card
+            if (entry != null && Event.current.type == EventType.ContextClick
+                && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
+            {
+                ShowPackageContextMenu(entry, pkg);
+                Event.current.Use();
+            }
         }
 
         private PackageRegistryEntry FindRegistryEntry(string assemblyName)
@@ -478,7 +514,20 @@ namespace BizSim.Google.Play.Editor.Core
             return null;
         }
 
-        private static void DrawStatusDot(bool active)
+        private void ShowPackageContextMenu(PackageRegistryEntry entry, PackageInfo pkg)
+        {
+            // Placeholder — expanded in next commit
+            var menu = new GenericMenu();
+            menu.AddDisabledItem(new GUIContent("Context menu coming soon..."));
+            menu.ShowAsContext();
+        }
+
+        private void OpenConfigWindow(PackageRegistryEntry entry)
+        {
+            // Placeholder — expanded in next commit
+        }
+
+        private static void DrawStatusDot(bool active, bool hasUpdate = false)
         {
             var rect = GUILayoutUtility.GetRect(12, 14, GUILayout.Width(12));
             rect.y += 3;
@@ -486,7 +535,12 @@ namespace BizSim.Google.Play.Editor.Core
             rect.height = 8;
 
             var oldColor = GUI.color;
-            GUI.color = active ? Color.green : new Color(0.5f, 0.5f, 0.5f);
+            if (hasUpdate)
+                GUI.color = new Color(1f, 0.6f, 0f); // orange for update available
+            else if (active)
+                GUI.color = Color.green;
+            else
+                GUI.color = new Color(0.5f, 0.5f, 0.5f);
             GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture, ScaleMode.StretchToFill, true, 1f);
             GUI.color = oldColor;
         }
