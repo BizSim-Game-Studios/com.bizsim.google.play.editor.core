@@ -516,15 +516,96 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void ShowPackageContextMenu(PackageRegistryEntry entry, PackageInfo pkg)
         {
-            // Placeholder — expanded in next commit
             var menu = new GenericMenu();
-            menu.AddDisabledItem(new GUIContent("Context menu coming soon..."));
+
+            if (pkg.IsInstalled && !string.IsNullOrEmpty(entry.ConfigWindowTypeName))
+                menu.AddItem(new GUIContent("Open Configuration..."), false, () => OpenConfigWindow(entry));
+
+            menu.AddSeparator("");
+
+            if (!string.IsNullOrEmpty(entry.GitHubRepoName))
+            {
+                menu.AddItem(new GUIContent("View on GitHub"), false,
+                    () => Application.OpenURL($"https://github.com/BizSim-Game-Studios/{entry.GitHubRepoName}"));
+                menu.AddItem(new GUIContent("Copy Git Install URL"), false,
+                    () =>
+                    {
+                        EditorGUIUtility.systemCopyBuffer = entry.GitInstallUrl;
+                        ShowNotification(new GUIContent("URL copied!"));
+                    });
+            }
+
+            if (pkg.IsInstalled && entry.SampleFolders != null && entry.SampleFolders.Length > 0)
+            {
+                menu.AddSeparator("");
+                foreach (var sample in entry.SampleFolders)
+                {
+                    string s = sample; // closure capture
+                    menu.AddItem(new GUIContent($"Import Sample/{s}"), false,
+                        () => ImportSample(entry, s));
+                }
+            }
+
+            if (pkg.IsInstalled && entry.DocFiles != null && entry.DocFiles.Length > 0)
+            {
+                menu.AddSeparator("");
+                foreach (var doc in entry.DocFiles)
+                {
+                    string d = doc; // closure capture
+                    menu.AddItem(new GUIContent($"Open Documentation/{d}"), false,
+                        () => OpenDocumentation(entry, d));
+                }
+            }
+
             menu.ShowAsContext();
         }
 
         private void OpenConfigWindow(PackageRegistryEntry entry)
         {
-            // Placeholder — expanded in next commit
+            // Try assembly scan to find the editor window type
+            var type = System.AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic)
+                .SelectMany(a =>
+                {
+                    try { return a.GetTypes(); }
+                    catch { return System.Type.EmptyTypes; }
+                })
+                .FirstOrDefault(t => t.FullName == entry.ConfigWindowTypeName);
+
+            if (type != null && typeof(EditorWindow).IsAssignableFrom(type))
+                EditorWindow.GetWindow(type);
+            else
+                Debug.LogWarning($"[BizSim.EditorCore] Configuration window not found: {entry.ConfigWindowTypeName}");
+        }
+
+        private void ImportSample(PackageRegistryEntry entry, string sampleName)
+        {
+            string src = $"Packages/{entry.PackageId}/Samples~/{sampleName}";
+            string dst = $"Assets/Samples/{entry.PackageId}/{entry.CurrentVersion ?? "unknown"}/{sampleName}";
+
+            if (!System.IO.Directory.Exists(src))
+            {
+                Debug.LogWarning($"[BizSim.EditorCore] Sample not found: {src}");
+                return;
+            }
+
+            string parentDir = System.IO.Path.GetDirectoryName(dst);
+            if (!string.IsNullOrEmpty(parentDir))
+                System.IO.Directory.CreateDirectory(parentDir);
+
+            FileUtil.CopyFileOrDirectory(src, dst);
+            AssetDatabase.Refresh();
+            ShowNotification(new GUIContent($"Imported: {sampleName}"));
+        }
+
+        private static void OpenDocumentation(PackageRegistryEntry entry, string docFile)
+        {
+            string path = $"Packages/{entry.PackageId}/Documentation~/{docFile}";
+            string fullPath = System.IO.Path.GetFullPath(path);
+            if (System.IO.File.Exists(fullPath))
+                System.Diagnostics.Process.Start(fullPath);
+            else
+                Debug.LogWarning($"[BizSim.EditorCore] Documentation not found: {path}");
         }
 
         private static void DrawStatusDot(bool active, bool hasUpdate = false)
