@@ -107,6 +107,10 @@ namespace BizSim.Google.Play.Editor.Core
         public static bool IsAgeSignalsInstalled() => IsAssemblyLoaded("BizSim.Google.Play.AgeSignals");
         public static bool IsGamesServicesInstalled() => IsAssemblyLoaded("BizSim.Google.Play.Games");
         public static bool IsInstallReferrerInstalled() => IsAssemblyLoaded("BizSim.Google.Play.InstallReferrer");
+        public static bool IsReviewInstalled() => IsAssemblyLoaded("BizSim.Google.Play.Review");
+        public static bool IsAppUpdateInstalled() => IsAssemblyLoaded("BizSim.Google.Play.AppUpdate");
+        public static bool IsAssetDeliveryInstalled() => IsAssemblyLoaded("BizSim.Google.Play.AssetDelivery");
+        public static bool IsFigmaImporterInstalled() => IsAssemblyLoaded("BizSim.Unity.Figma.Importer.Editor");
 
         // --- Google Play Plugins ---
 
@@ -138,6 +142,12 @@ namespace BizSim.Google.Play.Editor.Core
             AddDetection(results, "Age Signals", "BizSim.Google.Play.AgeSignals", PackageCategory.BizSim);
             AddDetection(results, "Games Services", "BizSim.Google.Play.Games", PackageCategory.BizSim);
             AddDetection(results, "Install Referrer", "BizSim.Google.Play.InstallReferrer", PackageCategory.BizSim);
+            AddDetection(results, "In-App Review", "BizSim.Google.Play.Review", PackageCategory.BizSim);
+            AddDetection(results, "In-App Updates", "BizSim.Google.Play.AppUpdate", PackageCategory.BizSim);
+            AddDetection(results, "Asset Delivery", "BizSim.Google.Play.AssetDelivery", PackageCategory.BizSim);
+
+            // BizSim Utility
+            AddDetection(results, "Figma Importer", "BizSim.Unity.Figma.Importer.Editor", PackageCategory.BizSimUtility);
 
             // Google Play
             AddDetection(results, "Play Common", "Google.Play.Common", PackageCategory.GooglePlay);
@@ -175,6 +185,7 @@ namespace BizSim.Google.Play.Editor.Core
     {
         Firebase,
         BizSim,
-        GooglePlay
+        GooglePlay,
+        BizSimUtility
     }
 }
