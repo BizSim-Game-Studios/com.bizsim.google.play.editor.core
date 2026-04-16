@@ -23,6 +23,7 @@ namespace BizSim.Google.Play.Editor.Core
         public string[] DocFiles;
         public string PlayCoreArtifact;
         public string EditorInitDefine;
+        public bool ScopedRegistryInstall;
 
         [NonSerialized] public string LatestTag;
         [NonSerialized] public string InstalledVersion;

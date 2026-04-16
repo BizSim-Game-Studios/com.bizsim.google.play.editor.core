@@ -17,7 +17,8 @@ namespace BizSim.Google.Play.Editor.Core
         static readonly string[] RequiredScopes = new[]
         {
             "com.google.external-dependency-manager",
-            "com.google.firebase"
+            "com.google.firebase",
+            "com.google.play"
         };
 
         /// <summary>

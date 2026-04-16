@@ -98,9 +98,6 @@ namespace BizSim.Google.Play.Editor.Core
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
-            if (isInstalling)
-                GUI.enabled = false;
-
             DrawFirebaseSection();
             GUILayout.Space(6);
             DrawBizSimSection();
@@ -109,20 +106,23 @@ namespace BizSim.Google.Play.Editor.Core
             GUILayout.Space(6);
             DrawUtilitySection();
             GUILayout.Space(6);
+            DrawPlatformSection();
+            GUILayout.Space(6);
             DrawDefineSymbolsSection();
 
             if (isInstalling)
             {
-                GUI.enabled = true;
                 EditorGUILayout.Space(4);
+                string currentPkg = _installQueue.CurrentRequest?.PackageId ?? "package";
+                int remaining = _installQueue.Remaining;
+                string label = remaining > 0
+                    ? $"Installing {currentPkg}... ({remaining} queued)"
+                    : $"Installing {currentPkg}...";
                 var rect = EditorGUILayout.GetControlRect(false, 20);
-                EditorGUI.ProgressBar(rect, 0.5f, $"Installing... ({_installQueue.Remaining} remaining)");
+                EditorGUI.ProgressBar(rect, 0.5f, label);
             }
 
             EditorGUILayout.EndScrollView();
-
-            if (isInstalling)
-                GUI.enabled = true;
         }
 
         // ─────────────────────────────────────────────
@@ -268,6 +268,31 @@ namespace BizSim.Google.Play.Editor.Core
 
                 EditorGUILayout.EndHorizontal();
 
+                // Firebase SDK update check
+                if (analyticsInstalled && !string.IsNullOrEmpty(RemoteVersionChecker.LatestFirebaseTag))
+                {
+                    string latestFirebase = RemoteVersionChecker.LatestFirebaseTag.TrimStart('v');
+                    bool hasFirebaseUpdate = !string.IsNullOrEmpty(version) && latestFirebase != version;
+
+                    if (hasFirebaseUpdate)
+                    {
+                        GUILayout.Space(4);
+                        EditorGUILayout.BeginHorizontal();
+
+                        var oldBgColor = GUI.backgroundColor;
+                        GUI.backgroundColor = new Color(1f, 0.8f, 0.2f);
+                        EditorGUILayout.HelpBox(
+                            $"Firebase SDK update available: v{version} → v{latestFirebase}",
+                            MessageType.Info);
+                        GUI.backgroundColor = oldBgColor;
+
+                        if (GUILayout.Button("Download", GUILayout.Height(38), GUILayout.Width(80)))
+                            Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
+
+                        EditorGUILayout.EndHorizontal();
+                    }
+                }
+
                 GUILayout.Space(6);
 
                 // Module grid
@@ -319,6 +344,19 @@ namespace BizSim.Google.Play.Editor.Core
             if (_googlePlayFoldout)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                if (!string.IsNullOrEmpty(RemoteVersionChecker.LatestGooglePlayPluginsTag))
+                {
+                    string latestGp = RemoteVersionChecker.LatestGooglePlayPluginsTag;
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"Latest release: {latestGp}", EditorStyles.miniLabel);
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("GitHub Releases", EditorStyles.miniButton, GUILayout.Width(100)))
+                        Application.OpenURL("https://github.com/google/play-unity-plugins/releases/latest");
+                    EditorGUILayout.EndHorizontal();
+                    GUILayout.Space(4);
+                }
+
                 DrawPackageGrid(googlePackages);
                 EditorGUILayout.EndVertical();
             }
@@ -348,6 +386,82 @@ namespace BizSim.Google.Play.Editor.Core
             }
 
             EditorGUILayout.EndFoldoutHeaderGroup();
+        }
+
+        // ─────────────────────────────────────────────
+        // Platform Section
+        // ─────────────────────────────────────────────
+
+        private bool _platformFoldout;
+
+        private void DrawPlatformSection()
+        {
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            bool isAndroid = target == BuildTarget.Android;
+
+            _platformFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_platformFoldout,
+                $"  Platform  ({target})");
+
+            if (_platformFoldout)
+            {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                // Current build target
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Active Build Target:", GUILayout.Width(140));
+                var oldColor = GUI.color;
+                GUI.color = isAndroid ? Color.green : new Color(1f, 0.5f, 0f);
+                EditorGUILayout.LabelField(target.ToString(), EditorStyles.boldLabel);
+                GUI.color = oldColor;
+                EditorGUILayout.EndHorizontal();
+
+                if (!isAndroid)
+                {
+                    EditorGUILayout.HelpBox(
+                        "Google Play packages require Android build target. " +
+                        "Switch via File → Build Settings → Android.",
+                        MessageType.Warning);
+                }
+
+                GUILayout.Space(4);
+                EditorGUILayout.LabelField("Package Platform Support:", EditorStyles.miniLabel);
+
+                // Platform compatibility table
+                DrawPlatformRow("Google Play Packages", "Android + Editor", isAndroid);
+                DrawPlatformRow("Firebase SDK", "Android, iOS, Editor", true);
+                DrawPlatformRow("BizSim Utilities", "All Platforms", true);
+
+                GUILayout.Space(4);
+
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Switch to Android", GUILayout.Height(24)))
+                {
+                    if (EditorUtility.DisplayDialog("Switch Build Target",
+                        "Switch to Android build target?\nThis may take a while.",
+                        "Switch", "Cancel"))
+                    {
+                        EditorUserBuildSettings.SwitchActiveBuildTarget(
+                            BuildTargetGroup.Android, BuildTarget.Android);
+                    }
+                }
+                if (GUILayout.Button("Open Build Settings", GUILayout.Height(24)))
+                    EditorWindow.GetWindow(System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.EndVertical();
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
+        }
+
+        private static void DrawPlatformRow(string label, string platforms, bool compatible)
+        {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(16);
+            DrawStatusDot(compatible);
+            EditorGUILayout.LabelField(label, GUILayout.Width(180));
+            EditorGUILayout.LabelField(platforms, EditorStyles.miniLabel);
+            EditorGUILayout.EndHorizontal();
         }
 
         // ─────────────────────────────────────────────
@@ -469,23 +583,44 @@ namespace BizSim.Google.Play.Editor.Core
             // Row 3: Action buttons
             EditorGUILayout.BeginHorizontal();
 
-            if (!pkg.IsInstalled && entry != null && !string.IsNullOrEmpty(entry.GitRepoUrl))
+            bool isThisPackageInstalling = _installQueue?.CurrentRequest != null
+                && entry != null
+                && _installQueue.CurrentRequest.Value.PackageId == entry.PackageId;
+
+            bool canInstall = entry != null && !pkg.IsInstalled
+                && (!string.IsNullOrEmpty(entry.GitRepoUrl) || entry.ScopedRegistryInstall);
+
+            if (canInstall)
             {
-                if (GUILayout.Button("Install", GUILayout.Height(20)))
+                GUI.enabled = !isThisPackageInstalling && !(_installQueue != null && _installQueue.IsProcessing);
+                string installLabel = isThisPackageInstalling ? "Installing..." : "Install";
+                if (GUILayout.Button(installLabel, GUILayout.Height(20)))
                 {
-                    _installQueue.Enqueue(new InstallRequest(entry.PackageId, entry.GitInstallUrl));
+                    if (entry.ScopedRegistryInstall)
+                    {
+                        ScopedRegistryConfigurator.EnsureOpenUpmRegistry();
+                        _installQueue.Enqueue(new InstallRequest(entry.PackageId, entry.PackageId, true));
+                    }
+                    else
+                    {
+                        _installQueue.Enqueue(new InstallRequest(entry.PackageId, entry.GitInstallUrl));
+                    }
                     if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
                 }
+                GUI.enabled = true;
             }
             else if (pkg.IsInstalled)
             {
                 if (entry != null && entry.HasUpdate)
                 {
-                    if (GUILayout.Button($"Update {entry.LatestTag}", GUILayout.Height(20), GUILayout.Width(90)))
+                    GUI.enabled = !isThisPackageInstalling && !(_installQueue != null && _installQueue.IsProcessing);
+                    string updateLabel = isThisPackageInstalling ? "Updating..." : $"Update {entry.LatestTag}";
+                    if (GUILayout.Button(updateLabel, GUILayout.Height(20), GUILayout.Width(100)))
                     {
                         _installQueue.Enqueue(new InstallRequest(entry.PackageId, entry.GitInstallUrl));
                         if (!_installQueue.IsProcessing) _installQueue.ProcessNext();
                     }
+                    GUI.enabled = true;
                 }
 
                 if (entry != null && !string.IsNullOrEmpty(entry.ConfigWindowTypeName))
@@ -493,11 +628,30 @@ namespace BizSim.Google.Play.Editor.Core
                     if (GUILayout.Button("Configure", GUILayout.Height(20), GUILayout.Width(70)))
                         OpenConfigWindow(entry);
                 }
+            }
 
-                if (entry != null)
+            // Context menu and remove — available for all packages with an entry
+            if (entry != null)
+            {
+                if (GUILayout.Button("...", GUILayout.Height(20), GUILayout.Width(22)))
+                    ShowPackageContextMenu(entry, pkg);
+
+                if (pkg.IsInstalled)
                 {
-                    if (GUILayout.Button("...", GUILayout.Height(20), GUILayout.Width(22)))
-                        ShowPackageContextMenu(entry, pkg);
+                    GUI.enabled = !PackageRemoveHandler.IsRemoving;
+                    var removeStyle = new GUIStyle(EditorStyles.miniButton)
+                    {
+                        normal = { textColor = new Color(0.9f, 0.3f, 0.3f) }
+                    };
+                    if (GUILayout.Button("✕", removeStyle, GUILayout.Height(20), GUILayout.Width(22)))
+                    {
+                        PackageRemoveHandler.RequestRemove(entry, pkg.Version, () =>
+                        {
+                            RefreshPackages();
+                            Repaint();
+                        });
+                    }
+                    GUI.enabled = true;
                 }
             }
 
@@ -548,43 +702,101 @@ namespace BizSim.Google.Play.Editor.Core
         {
             var menu = new GenericMenu();
 
+            // Configuration (BizSim packages only)
             if (pkg.IsInstalled && !string.IsNullOrEmpty(entry.ConfigWindowTypeName))
                 menu.AddItem(new GUIContent("Open Configuration..."), false, () => OpenConfigWindow(entry));
 
-            menu.AddSeparator("");
-
+            // GitHub / source links
             if (!string.IsNullOrEmpty(entry.GitHubRepoName))
             {
+                menu.AddSeparator("");
+                string repoOrg = entry.Category == PackageCategory.Firebase ? "firebase"
+                    : entry.Category == PackageCategory.GooglePlay ? "google"
+                    : "BizSim-Game-Studios";
                 menu.AddItem(new GUIContent("View on GitHub"), false,
-                    () => Application.OpenURL($"https://github.com/BizSim-Game-Studios/{entry.GitHubRepoName}"));
-                menu.AddItem(new GUIContent("Copy Git Install URL"), false,
-                    () =>
-                    {
-                        EditorGUIUtility.systemCopyBuffer = entry.GitInstallUrl;
-                        ShowNotification(new GUIContent("URL copied!"));
-                    });
+                    () => Application.OpenURL($"https://github.com/{repoOrg}/{entry.GitHubRepoName}"));
+
+                if (!string.IsNullOrEmpty(entry.GitRepoUrl))
+                {
+                    menu.AddItem(new GUIContent("Copy Git Install URL"), false,
+                        () =>
+                        {
+                            EditorGUIUtility.systemCopyBuffer = entry.GitInstallUrl;
+                            ShowNotification(new GUIContent("URL copied!"));
+                        });
+                }
             }
 
+            // Firebase-specific links
+            if (pkg.Category == PackageCategory.Firebase)
+            {
+                menu.AddSeparator("");
+                menu.AddItem(new GUIContent("Firebase Documentation"), false,
+                    () => Application.OpenURL("https://firebase.google.com/docs/unity/setup"));
+                menu.AddItem(new GUIContent("Firebase Console"), false,
+                    () => Application.OpenURL("https://console.firebase.google.com/"));
+                if (pkg.IsInstalled)
+                {
+                    menu.AddItem(new GUIContent("Download Latest SDK"), false,
+                        () => Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest"));
+                }
+            }
+
+            // Google Play-specific links
+            if (pkg.Category == PackageCategory.GooglePlay)
+            {
+                menu.AddSeparator("");
+                menu.AddItem(new GUIContent("Google Play Developer Docs"), false,
+                    () => Application.OpenURL("https://developer.android.com/guide/playcore"));
+                menu.AddItem(new GUIContent("Play Console"), false,
+                    () => Application.OpenURL("https://play.google.com/console/"));
+            }
+
+            // Samples
             if (pkg.IsInstalled && entry.SampleFolders != null && entry.SampleFolders.Length > 0)
             {
                 menu.AddSeparator("");
                 foreach (var sample in entry.SampleFolders)
                 {
-                    string s = sample; // closure capture
+                    string s = sample;
                     menu.AddItem(new GUIContent($"Import Sample/{s}"), false,
                         () => ImportSample(entry, s));
                 }
             }
 
+            // Documentation
             if (pkg.IsInstalled && entry.DocFiles != null && entry.DocFiles.Length > 0)
             {
                 menu.AddSeparator("");
                 foreach (var doc in entry.DocFiles)
                 {
-                    string d = doc; // closure capture
+                    string d = doc;
                     menu.AddItem(new GUIContent($"Open Documentation/{d}"), false,
                         () => OpenDocumentation(entry, d));
                 }
+            }
+
+            // Copy package ID
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Copy Package ID"), false,
+                () =>
+                {
+                    EditorGUIUtility.systemCopyBuffer = entry.PackageId;
+                    ShowNotification(new GUIContent($"Copied: {entry.PackageId}"));
+                });
+
+            // Remove
+            if (pkg.IsInstalled)
+            {
+                menu.AddSeparator("");
+                menu.AddItem(new GUIContent("Remove Package..."), false, () =>
+                {
+                    PackageRemoveHandler.RequestRemove(entry, pkg.Version, () =>
+                    {
+                        RefreshPackages();
+                        Repaint();
+                    });
+                });
             }
 
             menu.ShowAsContext();

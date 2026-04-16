@@ -23,6 +23,11 @@ namespace BizSim.Google.Play.Editor.Core
             @"""tag_name""\s*:\s*""([^""]+)""",
             RegexOptions.Compiled);
 
+        const string FirebaseRepo = "firebase/firebase-unity-sdk";
+        const string FirebaseCacheKey = CacheKeyPrefix + "firebase-unity-sdk";
+        const string GooglePlayPluginsRepo = "google/play-unity-plugins";
+        const string GooglePlayCacheKey = CacheKeyPrefix + "play-unity-plugins";
+
         static int _pendingCheckCount;
 
         /// <summary>
@@ -30,14 +35,20 @@ namespace BizSim.Google.Play.Editor.Core
         /// </summary>
         public static bool IsChecking => _pendingCheckCount > 0;
 
+        /// <summary>Latest Firebase Unity SDK tag (e.g. "v12.7.0"), or null.</summary>
+        public static string LatestFirebaseTag { get; private set; }
+
+        /// <summary>Latest Google Play Unity Plugins tag, or null.</summary>
+        public static string LatestGooglePlayPluginsTag { get; private set; }
+
         /// <summary>
-        /// Check latest tags for all BizSim packages that have a GitHubRepoName.
+        /// Check latest tags for all BizSim packages, Firebase SDK, and Google Play Plugins.
         /// Populates each entry's LatestTag field and invokes onComplete when done.
         /// Skips entries that have a valid cache hit.
         /// </summary>
         public static void CheckAll(PackageRegistryData registry, Action onComplete)
         {
-            if (registry == null || registry.BizSimPackages == null || registry.BizSimPackages.Count == 0)
+            if (registry == null)
             {
                 onComplete?.Invoke();
                 return;
@@ -45,27 +56,43 @@ namespace BizSim.Google.Play.Editor.Core
 
             var pending = new List<PendingRequest>();
 
-            foreach (var entry in registry.BizSimPackages)
+            // BizSim packages
+            if (registry.BizSimPackages != null)
             {
-                if (string.IsNullOrEmpty(entry.GitHubRepoName))
-                    continue;
-
-                // Try cache first
-                string cached = GetCachedTag(entry.GitHubRepoName);
-                if (cached != null)
+                foreach (var entry in registry.BizSimPackages)
                 {
-                    entry.LatestTag = cached;
-                    continue;
+                    if (string.IsNullOrEmpty(entry.GitHubRepoName))
+                        continue;
+
+                    string cached = GetCachedTag(entry.GitHubRepoName);
+                    if (cached != null)
+                    {
+                        entry.LatestTag = cached;
+                        continue;
+                    }
+
+                    string url = $"https://api.github.com/repos/BizSim-Game-Studios/{entry.GitHubRepoName}/releases/latest";
+                    pending.Add(CreatePendingRequest(entry, url));
                 }
-
-                string url = $"https://api.github.com/repos/BizSim-Game-Studios/{entry.GitHubRepoName}/releases/latest";
-                var request = UnityWebRequest.Get(url);
-                request.SetRequestHeader("User-Agent", UserAgent);
-                request.SetRequestHeader("Accept", "application/vnd.github.v3+json");
-                request.SendWebRequest();
-
-                pending.Add(new PendingRequest { Entry = entry, Request = request });
             }
+
+            // Firebase Unity SDK
+            string fbCached = GetCachedTag("firebase-unity-sdk");
+            if (fbCached != null)
+                LatestFirebaseTag = fbCached;
+            else
+                pending.Add(CreatePendingRequest(null,
+                    $"https://api.github.com/repos/{FirebaseRepo}/releases/latest",
+                    "firebase-unity-sdk"));
+
+            // Google Play Unity Plugins
+            string gpCached = GetCachedTag("play-unity-plugins");
+            if (gpCached != null)
+                LatestGooglePlayPluginsTag = gpCached;
+            else
+                pending.Add(CreatePendingRequest(null,
+                    $"https://api.github.com/repos/{GooglePlayPluginsRepo}/releases/latest",
+                    "play-unity-plugins"));
 
             if (pending.Count == 0)
             {
@@ -75,7 +102,6 @@ namespace BizSim.Google.Play.Editor.Core
 
             _pendingCheckCount++;
 
-            // Poll via EditorApplication.update
             EditorApplication.CallbackFunction poll = null;
             poll = () =>
             {
@@ -96,8 +122,21 @@ namespace BizSim.Google.Play.Editor.Core
                         string tag = ParseTagName(p.Request.downloadHandler.text);
                         if (!string.IsNullOrEmpty(tag))
                         {
-                            p.Entry.LatestTag = tag;
-                            SetCachedTag(p.Entry.GitHubRepoName, tag);
+                            if (p.Entry != null)
+                            {
+                                p.Entry.LatestTag = tag;
+                                SetCachedTag(p.Entry.GitHubRepoName, tag);
+                            }
+                            else if (p.CacheKey == "firebase-unity-sdk")
+                            {
+                                LatestFirebaseTag = tag;
+                                SetCachedTag("firebase-unity-sdk", tag);
+                            }
+                            else if (p.CacheKey == "play-unity-plugins")
+                            {
+                                LatestGooglePlayPluginsTag = tag;
+                                SetCachedTag("play-unity-plugins", tag);
+                            }
                         }
                     }
 
@@ -157,11 +196,21 @@ namespace BizSim.Google.Play.Editor.Core
             SessionState.SetString(key + TimestampSuffix, DateTime.UtcNow.Ticks.ToString());
         }
 
+        static PendingRequest CreatePendingRequest(PackageRegistryEntry entry, string url, string cacheKey = null)
+        {
+            var request = UnityWebRequest.Get(url);
+            request.SetRequestHeader("User-Agent", UserAgent);
+            request.SetRequestHeader("Accept", "application/vnd.github.v3+json");
+            request.SendWebRequest();
+            return new PendingRequest { Entry = entry, Request = request, CacheKey = cacheKey };
+        }
+
         class PendingRequest
         {
             public PackageRegistryEntry Entry;
             public UnityWebRequest Request;
             public bool Processed;
+            public string CacheKey;
         }
     }
 }

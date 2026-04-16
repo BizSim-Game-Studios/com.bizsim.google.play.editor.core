@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-04-16
+
+### Added
+- Package Remove button (✕) with confirmation dialog showing dependent assemblies and scripting defines
+- Firebase SDK version check via `firebase/firebase-unity-sdk` GitHub releases API
+- Firebase update available banner with download link when newer SDK version detected
+- Google Play Plugins (com.google.play.*) Install buttons via OpenUPM scoped registry
+- Google Play Plugins latest release tag display with GitHub Releases link
+- Platform section showing active build target, platform compatibility matrix, and Switch to Android button
+- Context menu items for Firebase packages: Firebase Documentation, Firebase Console, Download Latest SDK
+- Context menu items for Google Play packages: Google Play Developer Docs, Play Console
+- Copy Package ID context menu item for all packages
+- `PackageInstallQueue.CurrentRequest` property exposing the currently-installing package
+- `PackageRemoveHandler` static class for UPM package removal with dependency analysis
+- `RemoteVersionChecker.LatestFirebaseTag` and `LatestGooglePlayPluginsTag` static properties
+
+### Changed
+- Install/Update buttons now disable individually per-package during installation (previously global disable)
+- Progress bar shows specific package name being installed instead of generic text
+- Context menu (right-click / `...` button) now appears for ALL packages including uninstalled ones
+- `ScopedRegistryConfigurator` now includes `com.google.play` in required OpenUPM scopes
+- `PackageRegistryEntry` gains `ScopedRegistryInstall` field for OpenUPM-based packages
+- `PackageRegistry.json` enriched: all Firebase packages now have `GitHubRepoName`, Google Play packages have `ScopedRegistryInstall`
+
 ## [1.2.0] - 2026-04-16
 
 ### Added

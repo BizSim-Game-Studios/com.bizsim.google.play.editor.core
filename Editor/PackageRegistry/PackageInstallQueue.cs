@@ -17,6 +17,7 @@ namespace BizSim.Google.Play.Editor.Core
     {
         readonly Queue<InstallRequest> _queue = new();
         AddRequest _current;
+        InstallRequest? _currentRequest;
 
         /// <summary>Fired after each install with the request and success flag.</summary>
         public event Action<InstallRequest, bool> OnItemCompleted;
@@ -29,6 +30,9 @@ namespace BizSim.Google.Play.Editor.Core
 
         /// <summary>Number of queued (not yet started) installs.</summary>
         public int Remaining => _queue.Count;
+
+        /// <summary>The package currently being installed, or null if idle.</summary>
+        public InstallRequest? CurrentRequest => _currentRequest;
 
         /// <summary>Add a request to the end of the queue.</summary>
         public void Enqueue(InstallRequest request) => _queue.Enqueue(request);
@@ -47,6 +51,7 @@ namespace BizSim.Google.Play.Editor.Core
             }
 
             var req = _queue.Dequeue();
+            _currentRequest = req;
             _current = Client.Add(req.InstallIdentifier);
 
             EditorApplication.CallbackFunction poll = null;
@@ -57,6 +62,7 @@ namespace BizSim.Google.Play.Editor.Core
                 EditorApplication.update -= poll;
                 bool success = _current.Status == StatusCode.Success;
                 _current = null;
+                _currentRequest = null;
 
                 OnItemCompleted?.Invoke(req, success);
                 ProcessNext();
