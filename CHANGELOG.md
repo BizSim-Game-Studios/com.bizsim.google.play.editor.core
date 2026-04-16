@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-04-16
+
+### Added
+- `PackageRegistryEntry` metadata extension with `VersionClassName`, `SampleFolders`, `DocFiles`, `PlayCoreArtifact`, and `EditorInitDefine` fields
+- Version, release date, and Play Core version display on package cards via reflection on each package's `PackageVersion` class
+- Context menu (right-click or `...` button) per package card with: Open Configuration, View on GitHub, Copy Git Install URL, Import Sample submenu, Open Documentation submenu
+- Header summary bar showing installed count and available updates
+- Orange status dot for packages with available updates
+- Professional card redesign with three-row layout: name+version, date+PlayCore, action buttons
+
+### Changed
+- `PackageRegistry.json` now includes full metadata for all BizSim packages (samples, docs, defines, version class names)
+- Package card minimum width increased from 160 to 200 for improved readability
+- `PackageDetector.ScanAll` now enriches registry entries with version metadata from `PackageVersion` classes
+
 ## [1.1.0] - 2026-04-16
 
 ### Added
