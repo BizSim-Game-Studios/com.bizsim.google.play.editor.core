@@ -1,0 +1,22 @@
+{
+  "name": "BizSim.Google.Play.Editor.Core.EditorTests",
+  "rootNamespace": "BizSim.Google.Play.Editor.Core.EditorTests",
+  "references": [
+    "BizSim.Google.Play.Editor.Core"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
