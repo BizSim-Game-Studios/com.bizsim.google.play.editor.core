@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-04-16
+
+### Added
+- In-App Review, In-App Updates, Asset Delivery registered in `PackageDetector.ScanAll()` as `PackageCategory.BizSim`
+- Figma Importer registered under new `PackageCategory.BizSimUtility` category
+- Convenience detection methods: `IsReviewInstalled()`, `IsAppUpdateInstalled()`, `IsAssetDeliveryInstalled()`, `IsFigmaImporterInstalled()`
+
+### Fixed
+- Dashboard GC allocation: LINQ-filtered package lists now cached per `RefreshPackages()` call instead of per `OnGUI` repaint frame
+- Dashboard refreshes on window focus (`OnFocus`) instead of requiring manual Refresh button
+
 ## [1.0.0] - 2026-04-14
 
 ### Added
