@@ -121,39 +121,37 @@ namespace BizSim.Google.Play.Editor.Core
 
         /// <summary>
         /// Scan all known packages and return their status.
-        /// Instant, non-blocking.
+        /// Instant, non-blocking. Loads the registry from the embedded JSON resource.
         /// </summary>
         public static List<PackageInfo> ScanAll()
         {
+            var registry = PackageRegistryData.Load();
+            return ScanAll(registry);
+        }
+
+        /// <summary>
+        /// Scan all known packages using a pre-loaded registry.
+        /// Use this overload when the caller already holds a <see cref="PackageRegistryData"/>
+        /// instance (e.g., the dashboard) to avoid double-loading the JSON resource.
+        /// </summary>
+        public static List<PackageInfo> ScanAll(PackageRegistryData registry)
+        {
             var results = new List<PackageInfo>();
 
-            // Firebase
-            AddDetection(results, "Firebase Analytics", "Firebase.Analytics", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Auth", "Firebase.Auth", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Crashlytics", "Firebase.Crashlytics", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Remote Config", "Firebase.RemoteConfig", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Messaging", "Firebase.Messaging", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Storage", "Firebase.Storage", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Firestore", "Firebase.Firestore", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Functions", "Firebase.Functions", PackageCategory.Firebase);
-            AddDetection(results, "Firebase Database", "Firebase.Database", PackageCategory.Firebase);
+            if (registry == null)
+                return results;
 
-            // BizSim
-            AddDetection(results, "Age Signals", "BizSim.Google.Play.AgeSignals", PackageCategory.BizSim);
-            AddDetection(results, "Games Services", "BizSim.Google.Play.Games", PackageCategory.BizSim);
-            AddDetection(results, "Install Referrer", "BizSim.Google.Play.InstallReferrer", PackageCategory.BizSim);
-            AddDetection(results, "In-App Review", "BizSim.Google.Play.Review", PackageCategory.BizSim);
-            AddDetection(results, "In-App Updates", "BizSim.Google.Play.AppUpdate", PackageCategory.BizSim);
-            AddDetection(results, "Asset Delivery", "BizSim.Google.Play.AssetDelivery", PackageCategory.BizSim);
+            foreach (var entry in registry.FirebasePackages)
+                AddDetection(results, entry.DisplayName, entry.AssemblyName, PackageCategory.Firebase);
 
-            // BizSim Utility
-            AddDetection(results, "Figma Importer", "BizSim.Unity.Figma.Importer.Editor", PackageCategory.BizSimUtility);
+            foreach (var entry in registry.BizSimPackages)
+                AddDetection(results, entry.DisplayName, entry.AssemblyName, entry.Category);
 
-            // Google Play
-            AddDetection(results, "Play Common", "Google.Play.Common", PackageCategory.GooglePlay);
-            AddDetection(results, "Play Core", "Google.Play.Core", PackageCategory.GooglePlay);
-            AddDetection(results, "App Update", "Google.Play.AppUpdate", PackageCategory.GooglePlay);
-            AddDetection(results, "Asset Delivery", "Google.Play.AssetDelivery", PackageCategory.GooglePlay);
+            foreach (var entry in registry.GooglePlayPackages)
+                AddDetection(results, entry.DisplayName, entry.AssemblyName, PackageCategory.GooglePlay);
+
+            if (registry.Edm4u != null)
+                AddDetection(results, registry.Edm4u.DisplayName, registry.Edm4u.AssemblyName, PackageCategory.GooglePlay);
 
             return results;
         }
