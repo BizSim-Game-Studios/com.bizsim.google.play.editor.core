@@ -1,0 +1,224 @@
+{
+  "BizSimPackages": [
+    {
+      "PackageId": "com.bizsim.google.play.agesignals",
+      "DisplayName": "Age Signals",
+      "AssemblyName": "BizSim.Google.Play.AgeSignals",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.agesignals.git",
+      "GitHubRepoName": "com.bizsim.google.play.agesignals",
+      "ConfigWindowTypeName": "BizSim.Google.Play.AgeSignals.Editor.AgeSignalsConfiguration",
+      "Category": 1
+    },
+    {
+      "PackageId": "com.bizsim.google.play.appupdate",
+      "DisplayName": "In-App Updates",
+      "AssemblyName": "BizSim.Google.Play.AppUpdate",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.appupdate.git",
+      "GitHubRepoName": "com.bizsim.google.play.appupdate",
+      "ConfigWindowTypeName": "BizSim.Google.Play.AppUpdate.Editor.AppUpdateConfiguration",
+      "Category": 1
+    },
+    {
+      "PackageId": "com.bizsim.google.play.assetdelivery",
+      "DisplayName": "Asset Delivery",
+      "AssemblyName": "BizSim.Google.Play.AssetDelivery",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.assetdelivery.git",
+      "GitHubRepoName": "com.bizsim.google.play.assetdelivery",
+      "ConfigWindowTypeName": "BizSim.Google.Play.AssetDelivery.Editor.AssetDeliveryConfiguration",
+      "Category": 1
+    },
+    {
+      "PackageId": "com.bizsim.google.play.games",
+      "DisplayName": "Games Services",
+      "AssemblyName": "BizSim.Google.Play.Games",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.games.git",
+      "GitHubRepoName": "com.bizsim.google.play.games",
+      "ConfigWindowTypeName": "BizSim.Google.Play.Games.Editor.GamesConfiguration",
+      "Category": 1
+    },
+    {
+      "PackageId": "com.bizsim.google.play.installreferrer",
+      "DisplayName": "Install Referrer",
+      "AssemblyName": "BizSim.Google.Play.InstallReferrer",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.installreferrer.git",
+      "GitHubRepoName": "com.bizsim.google.play.installreferrer",
+      "ConfigWindowTypeName": "BizSim.Google.Play.InstallReferrer.Editor.InstallReferrerConfiguration",
+      "Category": 1
+    },
+    {
+      "PackageId": "com.bizsim.google.play.review",
+      "DisplayName": "In-App Review",
+      "AssemblyName": "BizSim.Google.Play.Review",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.review.git",
+      "GitHubRepoName": "com.bizsim.google.play.review",
+      "ConfigWindowTypeName": "BizSim.Google.Play.Review.Editor.ReviewConfiguration",
+      "Category": 1
+    },
+    {
+      "PackageId": "com.bizsim.unity.figma.importer",
+      "DisplayName": "Figma Importer",
+      "AssemblyName": "BizSim.Unity.Figma.Importer.Editor",
+      "GitRepoUrl": "https://github.com/BizSim-Game-Studios/com.bizsim.unity.figma.importer.git",
+      "GitHubRepoName": "com.bizsim.unity.figma.importer",
+      "ConfigWindowTypeName": "",
+      "Category": 3
+    }
+  ],
+  "FirebasePackages": [
+    {
+      "PackageId": "com.google.firebase.analytics",
+      "DisplayName": "Firebase Analytics",
+      "AssemblyName": "Firebase.Analytics",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.auth",
+      "DisplayName": "Firebase Auth",
+      "AssemblyName": "Firebase.Auth",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.crashlytics",
+      "DisplayName": "Firebase Crashlytics",
+      "AssemblyName": "Firebase.Crashlytics",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.remote-config",
+      "DisplayName": "Firebase Remote Config",
+      "AssemblyName": "Firebase.RemoteConfig",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.messaging",
+      "DisplayName": "Firebase Messaging",
+      "AssemblyName": "Firebase.Messaging",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.storage",
+      "DisplayName": "Firebase Storage",
+      "AssemblyName": "Firebase.Storage",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.firestore",
+      "DisplayName": "Firebase Firestore",
+      "AssemblyName": "Firebase.Firestore",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.functions",
+      "DisplayName": "Firebase Functions",
+      "AssemblyName": "Firebase.Functions",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.database",
+      "DisplayName": "Firebase Database",
+      "AssemblyName": "Firebase.Database",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.app-check",
+      "DisplayName": "Firebase App Check",
+      "AssemblyName": "Firebase.AppCheck",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.installations",
+      "DisplayName": "Firebase Installations",
+      "AssemblyName": "Firebase.Installations",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    },
+    {
+      "PackageId": "com.google.firebase.firebaseai",
+      "DisplayName": "Firebase AI",
+      "AssemblyName": "Firebase.AI",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 0
+    }
+  ],
+  "GooglePlayPackages": [
+    {
+      "PackageId": "com.google.play.common",
+      "DisplayName": "Play Common",
+      "AssemblyName": "Google.Play.Common",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 2
+    },
+    {
+      "PackageId": "com.google.play.core",
+      "DisplayName": "Play Core",
+      "AssemblyName": "Google.Play.Core",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 2
+    },
+    {
+      "PackageId": "com.google.play.appupdate",
+      "DisplayName": "Play App Update",
+      "AssemblyName": "Google.Play.AppUpdate",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 2
+    },
+    {
+      "PackageId": "com.google.play.assetdelivery",
+      "DisplayName": "Play Asset Delivery",
+      "AssemblyName": "Google.Play.AssetDelivery",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "",
+      "ConfigWindowTypeName": "",
+      "Category": 2
+    }
+  ],
+  "Edm4u": {
+    "PackageId": "com.google.external-dependency-manager",
+    "DisplayName": "External Dependency Manager",
+    "AssemblyName": "Google.VersionHandler",
+    "GitRepoUrl": "",
+    "GitHubRepoName": "",
+    "ConfigWindowTypeName": "",
+    "Category": 2
+  }
+}
