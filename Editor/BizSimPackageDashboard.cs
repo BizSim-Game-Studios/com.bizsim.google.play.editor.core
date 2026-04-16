@@ -94,6 +94,7 @@ namespace BizSim.Google.Play.Editor.Core
             bool isInstalling = _installQueue != null && _installQueue.IsProcessing;
 
             DrawToolbar();
+            DrawSummaryBar();
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
@@ -144,6 +145,35 @@ namespace BizSim.Google.Play.Editor.Core
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        // ─────────────────────────────────────────────
+        // Summary Bar
+        // ─────────────────────────────────────────────
+
+        private void DrawSummaryBar()
+        {
+            int totalPackages = _packages?.Count ?? 0;
+            int installed = _packages?.Count(p => p.IsInstalled) ?? 0;
+            int updatesAvailable = CountUpdatesAvailable();
+
+            string summary = $"{installed}/{totalPackages} packages installed";
+            if (updatesAvailable > 0)
+                summary += $" | {updatesAvailable} update(s) available";
+
+            EditorGUILayout.LabelField(summary, EditorStyles.centeredGreyMiniLabel);
+        }
+
+        private int CountUpdatesAvailable()
+        {
+            if (_registry == null) return 0;
+
+            int count = 0;
+            foreach (var entry in _registry.BizSimPackages)
+            {
+                if (entry.HasUpdate) count++;
+            }
+            return count;
         }
 
         // ─────────────────────────────────────────────
