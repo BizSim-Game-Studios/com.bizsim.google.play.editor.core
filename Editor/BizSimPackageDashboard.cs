@@ -91,9 +91,14 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void OnGUI()
         {
+            bool isInstalling = _installQueue != null && _installQueue.IsProcessing;
+
             DrawToolbar();
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+
+            if (isInstalling)
+                GUI.enabled = false;
 
             DrawFirebaseSection();
             GUILayout.Space(6);
@@ -105,7 +110,18 @@ namespace BizSim.Google.Play.Editor.Core
             GUILayout.Space(6);
             DrawDefineSymbolsSection();
 
+            if (isInstalling)
+            {
+                GUI.enabled = true;
+                EditorGUILayout.Space(4);
+                var rect = EditorGUILayout.GetControlRect(false, 20);
+                EditorGUI.ProgressBar(rect, 0.5f, $"Installing... ({_installQueue.Remaining} remaining)");
+            }
+
             EditorGUILayout.EndScrollView();
+
+            if (isInstalling)
+                GUI.enabled = true;
         }
 
         // ─────────────────────────────────────────────
