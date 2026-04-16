@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-16
+
+### Added
+- `PackageRegistryData` JSON-driven package registry replacing hardcoded ScanAll entries
+- `ManifestReader` utility for reading installed package versions from Packages/manifest.json
+- `RemoteVersionChecker` polling GitHub releases/latest API with 15-min SessionState cache
+- `PackageInstallQueue` sequential UPM install processor via Client.Add
+- `ScopedRegistryConfigurator` for idempotent OpenUPM scoped registry setup
+- One-click **Install** button for not-installed BizSim packages in dashboard
+- One-click **Update** button when newer GitHub release detected
+- "Checking for updates..." indicator in toolbar during version check
+- Install progress bar at bottom of dashboard during package operations
+
+### Changed
+- `PackageDetector.ScanAll()` now driven by `PackageRegistryData.json` instead of hardcoded entries
+- Package versions enriched from manifest.json (accurate semver instead of "Installed")
+- Dashboard buttons disabled during install operations
+
 ## [1.0.1] - 2026-04-16
 
 ### Added
