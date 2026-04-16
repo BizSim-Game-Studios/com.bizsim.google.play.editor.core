@@ -20,9 +20,14 @@ namespace BizSim.Google.Play.Editor.Core
     {
         private Vector2 _scrollPosition;
         private List<PackageInfo> _packages;
+        private List<PackageInfo> _firebasePackages;
+        private List<PackageInfo> _bizSimPackages;
+        private List<PackageInfo> _googlePlayPackages;
+        private List<PackageInfo> _utilityPackages;
         private bool _firebaseDetailsFoldout = true;
         private bool _bizSimFoldout = true;
         private bool _googlePlayFoldout = true;
+        private bool _utilityFoldout = true;
         private bool _definesFoldout;
 
         [MenuItem("BizSim/Package Dashboard", false, 0)]
@@ -38,9 +43,18 @@ namespace BizSim.Google.Play.Editor.Core
             RefreshPackages();
         }
 
+        private void OnFocus()
+        {
+            RefreshPackages();
+        }
+
         private void RefreshPackages()
         {
             _packages = PackageDetector.ScanAll();
+            _firebasePackages = _packages.Where(p => p.Category == PackageCategory.Firebase).ToList();
+            _bizSimPackages = _packages.Where(p => p.Category == PackageCategory.BizSim).ToList();
+            _googlePlayPackages = _packages.Where(p => p.Category == PackageCategory.GooglePlay).ToList();
+            _utilityPackages = _packages.Where(p => p.Category == PackageCategory.BizSimUtility).ToList();
         }
 
         private void OnGUI()
@@ -54,6 +68,8 @@ namespace BizSim.Google.Play.Editor.Core
             DrawBizSimSection();
             GUILayout.Space(6);
             DrawGooglePlaySection();
+            GUILayout.Space(6);
+            DrawUtilitySection();
             GUILayout.Space(6);
             DrawDefineSymbolsSection();
 
@@ -85,7 +101,8 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void DrawFirebaseSection()
         {
-            var firebasePackages = _packages.Where(p => p.Category == PackageCategory.Firebase).ToList();
+            var firebasePackages = _firebasePackages;
+            if (firebasePackages == null) return;
             int installedCount = firebasePackages.Count(p => p.IsInstalled);
 
             _firebaseDetailsFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_firebaseDetailsFoldout,
@@ -188,7 +205,8 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void DrawBizSimSection()
         {
-            var bizSimPackages = _packages.Where(p => p.Category == PackageCategory.BizSim).ToList();
+            var bizSimPackages = _bizSimPackages;
+            if (bizSimPackages == null) return;
             int installedCount = bizSimPackages.Count(p => p.IsInstalled);
 
             _bizSimFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_bizSimFoldout,
@@ -210,7 +228,8 @@ namespace BizSim.Google.Play.Editor.Core
 
         private void DrawGooglePlaySection()
         {
-            var googlePackages = _packages.Where(p => p.Category == PackageCategory.GooglePlay).ToList();
+            var googlePackages = _googlePlayPackages;
+            if (googlePackages == null) return;
             int installedCount = googlePackages.Count(p => p.IsInstalled);
 
             _googlePlayFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_googlePlayFoldout,
@@ -220,6 +239,30 @@ namespace BizSim.Google.Play.Editor.Core
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 DrawPackageGrid(googlePackages);
+                EditorGUILayout.EndVertical();
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
+        }
+
+        // ─────────────────────────────────────────────
+        // BizSim Utilities Section
+        // ─────────────────────────────────────────────
+
+        private void DrawUtilitySection()
+        {
+            var utilityPackages = _utilityPackages;
+            if (utilityPackages == null || utilityPackages.Count == 0) return;
+
+            int installedCount = utilityPackages.Count(p => p.IsInstalled);
+
+            _utilityFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_utilityFoldout,
+                $"  BizSim Utilities  ({installedCount}/{utilityPackages.Count})");
+
+            if (_utilityFoldout)
+            {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                DrawPackageGrid(utilityPackages);
                 EditorGUILayout.EndVertical();
             }
 
