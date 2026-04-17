@@ -253,21 +253,53 @@ namespace BizSim.Google.Play.Editor.Core
 
                 EditorGUILayout.EndHorizontal();
 
-                // Latest-upstream footer. Kept as an informational link rather than a
-                // big "update available" banner tied to Analytics. Per-module update
-                // badges will replace this in Plan H-2 (RemoteVersionChecker + a
-                // secure FirebaseUpdater).
+                // Update availability — per-module (Plan H-2). Firebase Unity SDK ships
+                // as a single bundle, so every entry's LatestTag == LatestFirebaseTag
+                // (populated by RemoteVersionChecker.PropagateFirebaseTagToEntries).
+                // HasUpdate on each entry lights up the orange dot in DrawStatusDot
+                // without any new code. The banner below surfaces the aggregate for
+                // discoverability.
                 if (!string.IsNullOrEmpty(RemoteVersionChecker.LatestFirebaseTag))
                 {
+                    int updatesAvailable = 0;
+                    if (_registry?.FirebasePackages != null)
+                    {
+                        foreach (var entry in _registry.FirebasePackages)
+                            if (entry.HasUpdate) updatesAvailable++;
+                    }
+
                     GUILayout.Space(4);
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(
-                        $"Latest Firebase Unity SDK release: {RemoteVersionChecker.LatestFirebaseTag}",
-                        EditorStyles.miniLabel);
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("GitHub Releases", EditorStyles.miniButton, GUILayout.Width(100)))
-                        Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
-                    EditorGUILayout.EndHorizontal();
+                    if (updatesAvailable > 0)
+                    {
+                        var oldBgColor = GUI.backgroundColor;
+                        GUI.backgroundColor = new Color(1f, 0.8f, 0.2f);
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.HelpBox(
+                            $"{updatesAvailable} Firebase module(s) have updates available " +
+                            $"(latest: {RemoteVersionChecker.LatestFirebaseTag}).",
+                            MessageType.Info);
+                        // Manual download flow. Consumer downloads the .unitypackage
+                        // bundle from GitHub and re-imports the modules they use. A
+                        // one-click secure updater (download + SHA256 verify +
+                        // AssetDatabase.ImportPackage with interactive:true) is
+                        // deferred to editor.core 1.6.0 under ADR-010 (Firebase
+                        // Updater Security).
+                        if (GUILayout.Button("Download Latest SDK", GUILayout.Height(38), GUILayout.Width(140)))
+                            Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
+                        EditorGUILayout.EndHorizontal();
+                        GUI.backgroundColor = oldBgColor;
+                    }
+                    else
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField(
+                            $"Latest Firebase Unity SDK release: {RemoteVersionChecker.LatestFirebaseTag}",
+                            EditorStyles.miniLabel);
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("GitHub Releases", EditorStyles.miniButton, GUILayout.Width(100)))
+                            Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
+                        EditorGUILayout.EndHorizontal();
+                    }
                 }
 
                 GUILayout.Space(6);

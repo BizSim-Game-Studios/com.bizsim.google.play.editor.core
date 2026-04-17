@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-04-17
+
+### Added
+- **Per-module Firebase update detection (K9.4, Plan H-2).** `RemoteVersionChecker.PropagateFirebaseTagToEntries(registry)` copies the shared `LatestFirebaseTag` into every Firebase entry's `LatestTag` — both on cache hit and after a successful network check. This activates `PackageRegistryEntry.HasUpdate` per module: `DrawStatusDot(pkg.IsInstalled, entry.HasUpdate)` now lights up an orange dot on each Firebase module card whose installed version lags behind the latest upstream SDK release. Implementation rationale: Firebase Unity SDK ships as a single bundle, so all modules share one upstream version — per-module update detection is therefore a per-entry `HasUpdate` check against the same shared tag, no per-module CDN calls required.
+- **Firebase updates banner in the dashboard.** When one or more installed modules have `HasUpdate == true`, the Firebase section surfaces an aggregate banner (`N Firebase module(s) have updates available (latest: vX.Y.Z)`) with a prominent **Download Latest SDK** button that opens the GitHub Releases page. When every installed module is current, the banner collapses to the informational `Latest Firebase Unity SDK release: vX.Y.Z` footer with `GitHub Releases` mini-link.
+- `FirebaseTagPropagationTest` drift guard (5 assertions): propagation populates every entry, null registry is safe, empty tag leaves entries untouched, `HasUpdate` lights up when versions differ, `HasUpdate` stays false when versions match.
+- `Editor/AssemblyInfo.cs` with `[InternalsVisibleTo]` for the `EditorTests` assembly. Enables test access to `internal` helpers like `RemoteVersionChecker.PropagateFirebaseTagToEntries` without widening the public API surface. Matches the pattern used across all `com.bizsim.google.play.*` bridge packages.
+
+### Deferred
+- **One-click Firebase auto-updater (originally scoped for 1.5.0, deferred to 1.6.0).** Automatic download + SHA256 verify + `AssetDatabase.ImportPackage` for installed modules requires security hardening (URL allowlist, zip path-traversal guards, checksum verification, user-confirmation dialog) — tracked under **ADR-010 (Firebase Updater Security)**. The manual download path remains the supported update flow until ADR-010 lands: click **Download Latest SDK**, extract the zip, re-import the `.unitypackage` files matching your installed modules. This scope split was made explicitly to avoid shipping a high-blast-radius installer without a proper security review.
+
 ## [1.4.0] - 2026-04-17
 
 ### Added

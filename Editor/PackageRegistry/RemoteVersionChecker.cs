@@ -79,7 +79,14 @@ namespace BizSim.Google.Play.Editor.Core
             // Firebase Unity SDK
             string fbCached = GetCachedTag("firebase-unity-sdk");
             if (fbCached != null)
+            {
                 LatestFirebaseTag = fbCached;
+                // Plan H-2: Firebase modules all share a single upstream SDK version,
+                // so every Firebase entry's LatestTag = LatestFirebaseTag. This lets
+                // PackageRegistryEntry.HasUpdate light up per-module update dots in
+                // the dashboard without a per-module network call.
+                PropagateFirebaseTagToEntries(registry);
+            }
             else
                 pending.Add(CreatePendingRequest(null,
                     $"https://api.github.com/repos/{FirebaseRepo}/releases/latest",
@@ -131,6 +138,8 @@ namespace BizSim.Google.Play.Editor.Core
                             {
                                 LatestFirebaseTag = tag;
                                 SetCachedTag("firebase-unity-sdk", tag);
+                                // See comment at the cache-hit branch above.
+                                PropagateFirebaseTagToEntries(registry);
                             }
                             else if (p.CacheKey == "play-unity-plugins")
                             {
@@ -161,6 +170,28 @@ namespace BizSim.Google.Play.Editor.Core
         {
             // SessionState does not expose enumeration, so consumers must
             // reload from the network after calling this.
+        }
+
+        /// <summary>
+        /// Copies <see cref="LatestFirebaseTag"/> into every Firebase entry's <c>LatestTag</c>.
+        /// Firebase Unity SDK ships as a single bundle — all modules share a single upstream
+        /// version. Per-module update detection therefore reduces to a per-entry HasUpdate
+        /// check against the same shared tag.
+        /// </summary>
+        /// <remarks>
+        /// Exposed as <c>internal</c> for EditorTests to verify propagation without spinning
+        /// up a network request. Production callers should stay within <see cref="CheckAll"/>.
+        /// </remarks>
+        internal static void PropagateFirebaseTagToEntries(PackageRegistryData registry)
+        {
+            if (registry?.FirebasePackages == null || string.IsNullOrEmpty(LatestFirebaseTag))
+                return;
+
+            foreach (var entry in registry.FirebasePackages)
+            {
+                if (entry != null)
+                    entry.LatestTag = LatestFirebaseTag;
+            }
         }
 
         static string ParseTagName(string json)
