@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-04-17
+
+### Added
+- **`FirebaseUpdater` one-click secure auto-updater (ADR-010, Plan H-3).** New `Editor/PackageRegistry/FirebaseUpdater.cs` implements the download → verify → extract → import pipeline previously deferred from 1.5.0. Dashboard's Firebase section now exposes an **Auto-Update Installed Modules** button alongside the existing **Download Manually** fallback. The updater (1) fetches the latest release metadata from `api.github.com/repos/firebase/firebase-unity-sdk/releases/latest`, (2) locates the `firebase_unity_sdk_*.zip` asset, (3) downloads it to `Temporary Cache/BizSimFirebaseUpdater/`, (4) verifies SHA256 against the release's `sha256sums.txt` when present — mismatch aborts with a visible error, and when the checksum file is absent the user is asked to accept TLS-only security (defaults to cancel), (5) extracts with a path-traversal guard that rejects any entry escaping the destination via `..` or absolute paths, and (6) invokes `AssetDatabase.ImportPackage(path, interactive: true)` per installed module so Unity shows its native import dialog before any file is written.
+- **ADR-010 security controls:** URL allowlist (`github.com/firebase/firebase-unity-sdk/*`, `api.github.com/repos/firebase/firebase-unity-sdk/*`, `objects.githubusercontent.com/*`); HTTPS-only (no plain-HTTP fallback); interactive import (user reviews every file); temp-only writes under `Application.temporaryCachePath`; explicit user confirmation dialogs at download start and at each checksum-handling branch.
+- `FirebaseUpdaterSecurityTest` drift guard (11 assertions): URL allowlist accepts/rejects expected origins including protocol injection, zip path-traversal guard detects `../` entries, SHA256 sums parser handles GNU two-space + single-space + comment + blank-line variants, GitHub asset JSON parser extracts name + download URL.
+
+### Changed
+- Dashboard's Firebase updates banner now renders two buttons when updates are available: **Auto-Update Installed Modules** (invokes `FirebaseUpdater`) and **Download Manually** (the previous behavior, retained for air-gapped environments or consumers whose corp policy forbids auto-import). Same no-update footer as 1.5.0.
+
 ## [1.5.0] - 2026-04-17
 
 ### Added

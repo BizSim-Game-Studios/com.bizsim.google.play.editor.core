@@ -273,21 +273,33 @@ namespace BizSim.Google.Play.Editor.Core
                     {
                         var oldBgColor = GUI.backgroundColor;
                         GUI.backgroundColor = new Color(1f, 0.8f, 0.2f);
-                        EditorGUILayout.BeginHorizontal();
                         EditorGUILayout.HelpBox(
                             $"{updatesAvailable} Firebase module(s) have updates available " +
                             $"(latest: {RemoteVersionChecker.LatestFirebaseTag}).",
                             MessageType.Info);
-                        // Manual download flow. Consumer downloads the .unitypackage
-                        // bundle from GitHub and re-imports the modules they use. A
-                        // one-click secure updater (download + SHA256 verify +
-                        // AssetDatabase.ImportPackage with interactive:true) is
-                        // deferred to editor.core 1.6.0 under ADR-010 (Firebase
-                        // Updater Security).
-                        if (GUILayout.Button("Download Latest SDK", GUILayout.Height(38), GUILayout.Width(140)))
+                        GUI.backgroundColor = oldBgColor;
+
+                        // One-click secure updater (ADR-010, editor.core 1.6.0).
+                        // FirebaseUpdater.UpdateInstalledModules downloads the combined
+                        // release zip, verifies SHA256 when the release ships sums,
+                        // extracts with a path-traversal guard, and invokes Unity's
+                        // interactive ImportPackage dialog per installed module.
+                        EditorGUILayout.BeginHorizontal();
+                        if (GUILayout.Button("Auto-Update Installed Modules", GUILayout.Height(26)))
+                        {
+                            var installedAssemblies = firebasePackages
+                                .Where(p => p.IsInstalled)
+                                .Select(p => p.AssemblyName)
+                                .ToList();
+                            FirebaseUpdater.UpdateInstalledModules(installedAssemblies);
+                        }
+                        // Fallback manual-download button — kept for air-gapped
+                        // environments, consumers who prefer to vet the archive
+                        // locally, or consumers whose corp policy forbids the
+                        // updater's auto-import flow.
+                        if (GUILayout.Button("Download Manually", GUILayout.Height(26), GUILayout.Width(160)))
                             Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
                         EditorGUILayout.EndHorizontal();
-                        GUI.backgroundColor = oldBgColor;
                     }
                     else
                     {
