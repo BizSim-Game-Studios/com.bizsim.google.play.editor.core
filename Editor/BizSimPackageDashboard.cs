@@ -193,32 +193,16 @@ namespace BizSim.Google.Play.Editor.Core
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-                // Main status
-                bool analyticsInstalled = PackageDetector.IsFirebaseAnalyticsInstalled();
-                string version = PackageDetector.GetFirebaseAnalyticsVersion();
+                // BIZSIM_FIREBASE scripting-define status + management. The global
+                // "Firebase SDK: vX.Y.Z" row that used to live here was intentionally
+                // removed in 1.4.0 (K9.3, Plan H-1) — it read only Firebase.Analytics
+                // and mislabelled that single module's version as "the Firebase SDK
+                // version", which is incorrect for projects with heterogeneous module
+                // versions. Per-module versions are now shown exclusively in the
+                // module grid below.
                 bool definePresent = BizSimDefineManager.IsFirebaseDefinePresentAnywhere();
+                bool anyModuleInstalled = firebasePackages.Any(p => p.IsInstalled);
 
-                // Status row
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Firebase SDK:", GUILayout.Width(100));
-                if (analyticsInstalled)
-                {
-                    var oldColor = GUI.color;
-                    GUI.color = Color.green;
-                    string versionLabel = !string.IsNullOrEmpty(version) ? $"Installed (v{version})" : "Installed";
-                    EditorGUILayout.LabelField(versionLabel, EditorStyles.boldLabel);
-                    GUI.color = oldColor;
-                }
-                else
-                {
-                    var oldColor = GUI.color;
-                    GUI.color = new Color(1f, 0.5f, 0f);
-                    EditorGUILayout.LabelField("Not Found", EditorStyles.boldLabel);
-                    GUI.color = oldColor;
-                }
-                EditorGUILayout.EndHorizontal();
-
-                // Define row
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("BIZSIM_FIREBASE:", GUILayout.Width(100));
                 if (definePresent)
@@ -240,15 +224,16 @@ namespace BizSim.Google.Play.Editor.Core
 
                 GUILayout.Space(4);
 
-                // Action buttons
+                // Action buttons — enabled when at least ONE Firebase module is
+                // installed (not just Analytics). Projects may use Firestore, Auth,
+                // or Remote Config without Analytics.
                 EditorGUILayout.BeginHorizontal();
 
-                GUI.enabled = analyticsInstalled && !definePresent;
+                GUI.enabled = anyModuleInstalled && !definePresent;
                 if (GUILayout.Button("Add BIZSIM_FIREBASE", GUILayout.Height(26)))
                 {
                     BizSimDefineManager.AddFirebaseDefineAllPlatforms();
                     ShowNotification(new GUIContent("BIZSIM_FIREBASE added"));
-                    // Force immediate UI refresh after define change
                     EditorApplication.delayCall += () => Repaint();
                 }
                 GUI.enabled = true;
@@ -268,35 +253,30 @@ namespace BizSim.Google.Play.Editor.Core
 
                 EditorGUILayout.EndHorizontal();
 
-                // Firebase SDK update check
-                if (analyticsInstalled && !string.IsNullOrEmpty(RemoteVersionChecker.LatestFirebaseTag))
+                // Latest-upstream footer. Kept as an informational link rather than a
+                // big "update available" banner tied to Analytics. Per-module update
+                // badges will replace this in Plan H-2 (RemoteVersionChecker + a
+                // secure FirebaseUpdater).
+                if (!string.IsNullOrEmpty(RemoteVersionChecker.LatestFirebaseTag))
                 {
-                    string latestFirebase = RemoteVersionChecker.LatestFirebaseTag.TrimStart('v');
-                    bool hasFirebaseUpdate = !string.IsNullOrEmpty(version) && latestFirebase != version;
-
-                    if (hasFirebaseUpdate)
-                    {
-                        GUILayout.Space(4);
-                        EditorGUILayout.BeginHorizontal();
-
-                        var oldBgColor = GUI.backgroundColor;
-                        GUI.backgroundColor = new Color(1f, 0.8f, 0.2f);
-                        EditorGUILayout.HelpBox(
-                            $"Firebase SDK update available: v{version} → v{latestFirebase}",
-                            MessageType.Info);
-                        GUI.backgroundColor = oldBgColor;
-
-                        if (GUILayout.Button("Download", GUILayout.Height(38), GUILayout.Width(80)))
-                            Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
-
-                        EditorGUILayout.EndHorizontal();
-                    }
+                    GUILayout.Space(4);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(
+                        $"Latest Firebase Unity SDK release: {RemoteVersionChecker.LatestFirebaseTag}",
+                        EditorStyles.miniLabel);
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("GitHub Releases", EditorStyles.miniButton, GUILayout.Width(100)))
+                        Application.OpenURL("https://github.com/firebase/firebase-unity-sdk/releases/latest");
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 GUILayout.Space(6);
 
-                // Module grid
-                EditorGUILayout.LabelField("Installed Modules:", EditorStyles.miniLabel);
+                // Per-module grid. Each card shows the module's own installed version
+                // (parsed from Assets/Firebase/Editor/{Module}_version-*.txt by
+                // PackageDetector.GetFirebaseModuleVersion when assembly attributes
+                // return 0.0.0.0, which Firebase DLLs historically did).
+                EditorGUILayout.LabelField("Modules:", EditorStyles.miniLabel);
                 DrawPackageGrid(firebasePackages);
 
                 EditorGUILayout.EndVertical();

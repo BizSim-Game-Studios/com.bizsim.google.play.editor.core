@@ -279,6 +279,20 @@
       "DocFiles": [],
       "PlayCoreArtifact": "",
       "EditorInitDefine": ""
+    },
+    {
+      "PackageId": "com.google.firebase.performance",
+      "DisplayName": "Firebase Performance",
+      "AssemblyName": "Firebase.Performance",
+      "GitRepoUrl": "",
+      "GitHubRepoName": "firebase-unity-sdk",
+      "ConfigWindowTypeName": "",
+      "Category": 0,
+      "VersionClassName": "",
+      "SampleFolders": [],
+      "DocFiles": [],
+      "PlayCoreArtifact": "",
+      "EditorInitDefine": ""
     }
   ],
   "GooglePlayPackages": [

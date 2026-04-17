@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-04-17
+
+### Added
+- **Firebase Performance Monitoring in `PackageRegistry.json` (K9.2, Plan H-1).** The registry now catalogs 13 active Firebase Unity SDK modules. Firebase Performance was previously missing; it is now detected, counted in the dashboard foldout (`X/13 modules`), and rendered in the per-module grid just like its siblings.
+- `FirebaseRegistryCompletenessTest` drift guard (4 assertions): every active Firebase module present, unique `AssemblyName` values, `Firebase.*` namespace enforcement, correct `Category` assignment.
+
+### Changed
+- **Firebase dashboard section rewritten to per-module grid (K9.3, Plan H-1).** The top-of-section `Firebase SDK: vX.Y.Z` row has been removed; that row read only the Firebase Analytics version and mislabeled it as "the Firebase SDK version", which is inaccurate for projects running heterogeneous Firebase module versions. Per-module versions are now shown exclusively in the module grid below, each card reporting its own installed version parsed from `Assets/Firebase/Editor/{Module}_version-*.txt`. The `Firebase SDK update available` banner was likewise removed (it was Analytics-only); replaced with an informational `Latest Firebase Unity SDK release` footer linking to GitHub Releases. **Per-module update badges and a one-click secure update flow land in editor.core 1.5.0 (Plan H-2).**
+- `Add/Remove BIZSIM_FIREBASE` buttons now enabled when ANY Firebase module is installed — not just Analytics. Projects that ship Firestore, Auth, or Remote Config without Analytics can now manage the define from the dashboard.
+
 ## [1.3.1] - 2026-04-17
 
 ### Changed
