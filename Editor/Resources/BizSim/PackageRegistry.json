@@ -11,7 +11,9 @@
       "VersionClassName": "BizSim.Google.Play.AgeSignals.PackageVersion",
       "SampleFolders": ["BasicIntegration", "MockPresets"],
       "DocFiles": ["DATA_SAFETY.md", "PRIVACY_MANIFEST.xml"],
-      "PlayCoreArtifact": "",
+      "NativeSdkArtifact": "com.google.android.play:age-signals:0.0.3",
+      "NativeSdkLabel": "Play Core (age-signals beta)",
+      "PlayCoreArtifact": "com.google.android.play:age-signals:0.0.3",
       "EditorInitDefine": "BIZSIM_AGESIGNALS_INSTALLED"
     },
     {
@@ -25,6 +27,8 @@
       "VersionClassName": "BizSim.Google.Play.AppUpdate.PackageVersion",
       "SampleFolders": ["BasicIntegration", "FirebaseAdapter", "MockPresets", "PolicyPresets"],
       "DocFiles": ["DATA_SAFETY.md", "TELEMETRY-DASHBOARD.md", "UNITY_ACTIVITY_OVERRIDE.md", "UPGRADE-1.x.md"],
+      "NativeSdkArtifact": "com.google.android.play:app-update:2.1.0",
+      "NativeSdkLabel": "Play Core (app-update)",
       "PlayCoreArtifact": "com.google.android.play:app-update:2.1.0",
       "EditorInitDefine": "BIZSIM_APPUPDATE_INSTALLED"
     },
@@ -39,6 +43,8 @@
       "VersionClassName": "BizSim.Google.Play.AssetDelivery.PackageVersion",
       "SampleFolders": ["Addressables", "BasicIntegration", "MockPresets"],
       "DocFiles": ["ADDRESSABLES_INTEGRATION.md", "BUILD_GRADLE_GUIDE.md", "DATA_SAFETY.md", "LOCAL_DEV_WORKFLOW.md"],
+      "NativeSdkArtifact": "com.google.android.play:asset-delivery:2.3.0",
+      "NativeSdkLabel": "Play Core (asset-delivery)",
       "PlayCoreArtifact": "com.google.android.play:asset-delivery:2.3.0",
       "EditorInitDefine": "BIZSIM_ASSETDELIVERY_INSTALLED"
     },
@@ -53,7 +59,9 @@
       "VersionClassName": "BizSim.Google.Play.Games.PackageVersion",
       "SampleFolders": ["BasicIntegration", "MockPresets"],
       "DocFiles": ["API-REFERENCE.md", "ARCHITECTURE.md", "GETTING-STARTED.md", "TROUBLESHOOTING.md"],
-      "PlayCoreArtifact": "",
+      "NativeSdkArtifact": "com.google.android.gms:play-services-games-v2:21.0.0",
+      "NativeSdkLabel": "Play Games Services v2",
+      "PlayCoreArtifact": "com.google.android.gms:play-services-games-v2:21.0.0",
       "EditorInitDefine": "BIZSIM_GAMES_INSTALLED"
     },
     {
@@ -67,7 +75,9 @@
       "VersionClassName": "BizSim.Google.Play.InstallReferrer.PackageVersion",
       "SampleFolders": ["BasicIntegration", "MockPresets"],
       "DocFiles": ["DATA_SAFETY.md", "PRIVACY_MANIFEST.xml", "UPGRADE_GUIDE.md"],
-      "PlayCoreArtifact": "",
+      "NativeSdkArtifact": "com.android.installreferrer:installreferrer:2.2",
+      "NativeSdkLabel": "Install Referrer",
+      "PlayCoreArtifact": "com.android.installreferrer:installreferrer:2.2",
       "EditorInitDefine": "BIZSIM_INSTALLREFERRER_INSTALLED"
     },
     {
@@ -81,6 +91,8 @@
       "VersionClassName": "BizSim.Google.Play.Review.PackageVersion",
       "SampleFolders": ["BasicIntegration", "FeedbackSink", "FirebaseAdapter", "MockPresets", "TriggerPresets"],
       "DocFiles": ["DATA_SAFETY.md", "TELEMETRY-DASHBOARD.md", "UPGRADE-1.x.md"],
+      "NativeSdkArtifact": "com.google.android.play:review:2.0.2",
+      "NativeSdkLabel": "Play Core (review)",
       "PlayCoreArtifact": "com.google.android.play:review:2.0.2",
       "EditorInitDefine": "BIZSIM_REVIEW_INSTALLED"
     },

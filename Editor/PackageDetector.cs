@@ -232,15 +232,26 @@ namespace BizSim.Google.Play.Editor.Core
                 entry.ReleaseDate = (string)type.GetField("ReleaseDate",
                     System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
                     | System.Reflection.BindingFlags.Static)?.GetValue(null);
-                entry.PlayCoreVersion = (string)type.GetField("PlayCoreVersion",
+
+                // K8 canonical field (Plan G). Falls back to legacy fields until all BizSim packages migrate.
+                entry.NativeSdkVersion = (string)type.GetField("NativeSdkVersion",
                     System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
                     | System.Reflection.BindingFlags.Static)?.GetValue(null);
 
-                // Games uses PgsV2SdkVersion instead of PlayCoreVersion
-                if (string.IsNullOrEmpty(entry.PlayCoreVersion))
-                    entry.PlayCoreVersion = (string)type.GetField("PgsV2SdkVersion",
+                if (string.IsNullOrEmpty(entry.NativeSdkVersion))
+                    entry.NativeSdkVersion = (string)type.GetField("PlayCoreVersion",
                         System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
                         | System.Reflection.BindingFlags.Static)?.GetValue(null);
+
+                if (string.IsNullOrEmpty(entry.NativeSdkVersion))
+                    entry.NativeSdkVersion = (string)type.GetField("PgsV2SdkVersion",
+                        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic
+                        | System.Reflection.BindingFlags.Static)?.GetValue(null);
+
+                // Legacy field mirror for any consumer still reading entry.PlayCoreVersion.
+#pragma warning disable CS0618
+                entry.PlayCoreVersion = entry.NativeSdkVersion;
+#pragma warning restore CS0618
             }
         }
 

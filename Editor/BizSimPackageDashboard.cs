@@ -562,19 +562,23 @@ namespace BizSim.Google.Play.Editor.Core
             EditorGUILayout.LabelField(versionText, EditorStyles.miniLabel, GUILayout.Width(50));
             EditorGUILayout.EndHorizontal();
 
-            // Row 2: Release date + Play Core version (if available)
+            // Row 2: Release date + per-package native SDK label/version (K9 Plan G; no longer
+            // hardcoded "Play Core" — each package reports its own SDK family via NativeSdkLabel).
             if (entry != null && pkg.IsInstalled)
             {
                 bool hasDate = !string.IsNullOrEmpty(entry.ReleaseDate);
-                bool hasPlayCore = !string.IsNullOrEmpty(entry.PlayCoreVersion);
-                if (hasDate || hasPlayCore)
+                bool hasNativeSdk = !string.IsNullOrEmpty(entry.NativeSdkVersion);
+                string label = !string.IsNullOrEmpty(entry.NativeSdkLabel)
+                    ? entry.NativeSdkLabel
+                    : "SDK"; // graceful fallback for entries still on legacy registry without NativeSdkLabel
+                if (hasDate || hasNativeSdk)
                 {
                     EditorGUILayout.BeginHorizontal();
                     GUILayout.Space(16);
                     if (hasDate)
                         EditorGUILayout.LabelField(entry.ReleaseDate, EditorStyles.miniLabel, GUILayout.Width(80));
-                    if (hasPlayCore)
-                        EditorGUILayout.LabelField($"Play Core: {entry.PlayCoreVersion}", EditorStyles.miniLabel);
+                    if (hasNativeSdk)
+                        EditorGUILayout.LabelField($"{label}: {entry.NativeSdkVersion}", EditorStyles.miniLabel);
                     GUILayout.FlexibleSpace();
                     EditorGUILayout.EndHorizontal();
                 }

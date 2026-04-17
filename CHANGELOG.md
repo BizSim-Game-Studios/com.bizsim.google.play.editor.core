@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-04-17
+
+### Changed
+- **Dashboard label now reflects per-package native SDK family (K9 Plan G).** `BizSimPackageDashboard.cs:577` previously showed a hardcoded `"Play Core: {X}"` label for all BizSim packages — misleading because `games` uses Play Games Services (GMS) and `installreferrer` uses the Install Referrer Library (neither of which is "Play Core"). The label now reads from each package's `PackageVersion.NativeSdkLabel` const: `"Play Core (review)"`, `"Play Core (app-update)"`, `"Play Core (asset-delivery)"`, `"Play Core (age-signals beta)"`, `"Play Games Services v2"`, `"Install Referrer"` respectively.
+- `PackageRegistryEntry.cs` added `NativeSdkArtifact` + `NativeSdkLabel` fields (K8 canonical). Legacy `PlayCoreArtifact` + `PlayCoreVersion` preserved as `[Obsolete]` aliases for backward-compatible JSON read (removed in editor.core 2.0.0 per ADR-009).
+- `PackageDetector.EnrichWithVersionMetadata` prefers new `PackageVersion.NativeSdkVersion` const; falls back to legacy `PlayCoreVersion` / `PgsV2SdkVersion` during the transition window. Legacy `entry.PlayCoreVersion` mirrored from `entry.NativeSdkVersion` so any existing caller continues to work.
+
+### Added
+- `PackageRegistry.json` entries now include `NativeSdkArtifact` + `NativeSdkLabel` fields for all 6 bridge packages. Previously-empty artifact fields for `agesignals`, `games`, `installreferrer` are now populated.
+
 ## [1.3.0] - 2026-04-16
 
 ### Added
