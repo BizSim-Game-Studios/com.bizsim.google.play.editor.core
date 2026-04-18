@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-04-18
+
+### Added
+- **EDM4U declared as `package.json` dependency** (`com.google.external-dependency-manager: 1.2.187`). Per `unity-package-standards.md` §"EDM4U as a declared `package.json` dependency", `editor.core` declares EDM4U for family consistency even though it has no Android side of its own. Consumers who add the OpenUPM scoped registry to their host project's `Packages/manifest.json` (one-time setup) will have Unity Package Manager auto-install EDM4U transitively. Installation section of README updated with the manifest snippet. With this release, the full `com.bizsim.google.play.*` family (7 packages) now declares EDM4U as a declared dep — the Open follow-up "EDM4U dep back-port" is closed.
+
+### Fixed
+- Missing `.meta` file for `Editor/PackageRegistry/PackageRemoveHandler.cs`.
+
 ## [1.6.0] - 2026-04-17
 
 ### Added
