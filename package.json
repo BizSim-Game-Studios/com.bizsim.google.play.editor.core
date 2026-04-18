@@ -30,5 +30,8 @@
     "type": "git",
     "url": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core.git"
   },
-  "type": "library"
+  "type": "library",
+  "dependencies": {
+    "com.google.external-dependency-manager": "1.2.187"
+  }
 }

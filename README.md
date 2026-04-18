@@ -50,16 +50,28 @@ com.bizsim.google.play.games           ─┘
 
 ### Option 1: Git URL (recommended)
 
-1. In Unity Editor: **Window > Package Manager > + > Add package from git URL...**
-2. Enter:
-   ```
-   https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core.git
-   ```
+This package declares [EDM4U](https://github.com/googlesamples/unity-jar-resolver) as a transitive dependency (for consistency with the rest of the `com.bizsim.google.play.*` family), resolved via the **OpenUPM** scoped registry. Add the registry once and Unity Package Manager auto-installs EDM4U.
 
-3. Or add directly to `Packages/manifest.json`:
-   ```json
-   "com.bizsim.google.play.editor.core": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core.git"
-   ```
+Edit `Packages/manifest.json` and add the OpenUPM scoped registry plus the package:
+
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.google.external-dependency-manager"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.bizsim.google.play.editor.core": "https://github.com/BizSim-Game-Studios/com.bizsim.google.play.editor.core.git#v1.7.0"
+  }
+}
+```
+
+> If you prefer the Package Manager UI, you MUST still add the OpenUPM scoped registry to `manifest.json` manually — the UI does not prompt for scoped registries of transitive deps. Then use **Window > Package Manager > + > Add package from git URL...** with the Git URL above.
 
 ### Option 2: Local path
 
