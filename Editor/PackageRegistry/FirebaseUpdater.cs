@@ -336,7 +336,11 @@ namespace BizSim.Google.Play.Editor.Core
                 }
 
                 foreach (var pkg in modulePackages)
+#if UNITY_6000_6_OR_NEWER
+                    UnityEditor.AssetPackage.Package.Import(pkg, true);
+#else
                     AssetDatabase.ImportPackage(pkg, interactive: true);
+#endif
             }
             catch (Exception ex)
             {

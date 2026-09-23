@@ -833,7 +833,7 @@ namespace BizSim.Google.Play.Editor.Core
         private void OpenConfigWindow(PackageRegistryEntry entry)
         {
             // Try assembly scan to find the editor window type
-            var type = System.AppDomain.CurrentDomain.GetAssemblies()
+            var type = PackageDetector.GetLoadedAssemblies()
                 .Where(a => !a.IsDynamic)
                 .SelectMany(a =>
                 {

@@ -12,12 +12,21 @@ namespace BizSim.Google.Play.Editor.Core
     /// </summary>
     public static class PackageDetector
     {
+        internal static IReadOnlyList<System.Reflection.Assembly> GetLoadedAssemblies()
+        {
+#if UNITY_6000_6_OR_NEWER
+            return UnityEngine.Assemblies.CurrentAssemblies.GetLoadedAssemblies();
+#else
+            return System.AppDomain.CurrentDomain.GetAssemblies();
+#endif
+        }
+
         /// <summary>
         /// Check if a specific assembly is loaded in the current AppDomain.
         /// </summary>
         public static bool IsAssemblyLoaded(string assemblyName)
         {
-            return System.AppDomain.CurrentDomain.GetAssemblies()
+            return GetLoadedAssemblies()
                 .Any(a => a.GetName().Name == assemblyName);
         }
 
@@ -26,7 +35,7 @@ namespace BizSim.Google.Play.Editor.Core
         /// </summary>
         public static string GetAssemblyVersion(string assemblyName)
         {
-            var assembly = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assembly = GetLoadedAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == assemblyName);
 
             if (assembly == null) return null;
@@ -215,7 +224,7 @@ namespace BizSim.Google.Play.Editor.Core
             {
                 if (string.IsNullOrEmpty(entry.VersionClassName)) continue;
 
-                var type = System.AppDomain.CurrentDomain.GetAssemblies()
+                var type = GetLoadedAssemblies()
                     .Where(a => !a.IsDynamic)
                     .SelectMany(a =>
                     {
